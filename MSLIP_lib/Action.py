@@ -15,7 +15,7 @@ class Action(ABC):
 
     @abstractmethod
     def GetJarList(self) -> list:
-        "获取当前可用核心列表"
+        """获取当前可用核心列表"""
 
 
 class BackendMethod(Action):
