@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, \
-    QLabel, QTextEdit
+    QPushButton, QLabel, QDesktopWidget
+from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QSize
 
 
@@ -24,6 +25,9 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Minecraft 服务器启动器")
         self.setGeometry(100, 100, 800, 600)
 
+        # 居中窗口
+        self.center_window()
+
         # 设置整个窗口的样式表
         self.setStyleSheet("background-color: rgb(30, 30, 30); color: white;")
 
@@ -33,9 +37,10 @@ class MainWindow(QMainWindow):
 
         # 创建右侧子窗口
         self.sub_windows = {
-            "主页": SubWindow("欢迎使用 Minecraft 服务器启动器！"),
-            "设置": SubWindow("在这里配置服务器设置。"),
-            "关于": SubWindow("关于本软件的信息。"),
+            "启动": SubWindow("启动服务器"),
+            "终端": SubWindow("打开服务器终端"),
+            "下载": SubWindow("下载资源"),
+            "Mods": SubWindow("管理Mods"),
         }
 
         self.current_sub_window = None
@@ -53,28 +58,35 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.display_widget, 7)  # 将右侧显示区域的伸缩因子设置为7
 
         self.display_layout = QVBoxLayout(self.display_widget)
-        self.display_layout.addWidget(self.sub_windows["主页"])
-        self.current_sub_window = self.sub_windows["主页"]
+        self.display_layout.addWidget(self.sub_windows["启动"])
+        self.current_sub_window = self.sub_windows["启动"]
 
         # 添加左侧菜单按钮
-        self.add_menu_item("主页")
-        self.add_menu_item("设置")
-        self.add_menu_item("关于")
+        self.add_menu_item("启动")
+        self.add_menu_item("终端")
+        self.add_menu_item("下载")
+        self.add_menu_item("Mods")
 
-        # 设置左侧菜单按钮样式
         self.menu_list.setStyleSheet(
             "QListWidget { border: none; background-color: rgb(50, 50, 50); color: white; }"
             "QListWidget::item { padding: 15px; }"
-            "QListWidget::item:selected { background-color: rgb(80, 80, 80); }"
+            "QListWidget::item:selected { background-color: rgb(80, 80, 80); color: white; }"  # 选中效果
         )
 
     def add_menu_item(self, text):
-        item = QListWidgetItem(text)
-        item.setSizeHint(item.sizeHint() + QSize(0, 50))  # 调整按钮高度
-        self.menu_list.addItem(item)
+            button = QPushButton(text)
+            button.setFont(QFont("Arial", 12, QFont.Bold))  # 设置按钮字体样式
+            button.setStyleSheet(
+                "QPushButton { background-color: transparent; border: none; color: white; }"
+                "QPushButton:pressed { background-color: rgb(80, 80, 80); }"  # 按下效果
+            )
+            item = QListWidgetItem()
+            self.menu_list.addItem(item)
+            self.menu_list.setItemWidget(item, button)
+            item.setSizeHint(QSize(item.sizeHint().width(), 50))  # 调整按钮高度
 
     def change_sub_window(self, item):
-        selected_text = item.text()
+        selected_text = self.menu_list.itemWidget(item).text()
         if selected_text in self.sub_windows:
             new_sub_window = self.sub_windows[selected_text]
             if new_sub_window != self.current_sub_window:
@@ -84,6 +96,11 @@ class MainWindow(QMainWindow):
                 new_sub_window.show()
                 self.current_sub_window = new_sub_window
 
+    def center_window(self):
+        frame_geometry = self.frameGeometry()
+        screen_center = QDesktopWidget().availableGeometry().center()
+        frame_geometry.moveCenter(screen_center)
+        self.move(frame_geometry.topLeft())
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
