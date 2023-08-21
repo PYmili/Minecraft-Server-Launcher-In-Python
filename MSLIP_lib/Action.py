@@ -15,4 +15,4 @@ class Action(ABC):
 
 class BackendMethod(Action):
     def __init__(self, a):
-        self.a = a
+        self.b = a
