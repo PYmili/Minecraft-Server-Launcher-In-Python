@@ -61,8 +61,12 @@ class BackendMethod(Action):
             f.write(jar_req.content)
 
     def GetJarList(self) -> list:
-        pass
+        """返回可用版本列表"""
+        v_list = []
+        server_list = os.listdir(r'../Servers')
+        for i in server_list:
+            v_list.append(i.split('_')[-1])
+        return v_list
 
 
 b = BackendMethod()
-b.DownloadJar()
