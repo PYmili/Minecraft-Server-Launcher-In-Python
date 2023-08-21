@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Action(ABC):
+class ServerAction(ABC):
     """所有方法的基类"""
 
     @abstractmethod
