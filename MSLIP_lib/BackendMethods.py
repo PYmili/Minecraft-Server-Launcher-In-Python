@@ -5,10 +5,10 @@ import requests
 from fake_user_agent import user_agent
 from lxml import etree
 
-from Action import Action
+from Action import ServerAction
 
 
-class BackendMethod(Action):
+class BackendMethod(ServerAction):
     def __init__(self, ser_name: str = 'Test_1.18',
                  xmx: str = '4096',
                  xms: str = '2048',
@@ -37,13 +37,17 @@ class BackendMethod(Action):
 
     def DownloadJar(self) -> None:
         """此方法由下载事件调用"""
-        req = requests.get(url=self.spigot_url, headers=self.requests_head)
-        html = etree.HTML(req.text)
+        with requests.get(url=self.spigot_url, headers=self.requests_head) as get:
+            html = etree.HTML(get.text)
+
         jar_url = html.xpath('//tr[5]//a[last()]/@href')[0]
-        jar_req = requests.get(url=jar_url, headers=self.requests_head)
-        os.mkdir(rf'../Servers/{self.new_name}_{self.select_v}')
-        with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'wb', encoding='utf-8') as f:
-            f.write(jar_req.content)
+        with requests.get(url=jar_url, headers=self.requests_head, stream=True) as jar_get:
+            if jar_get.status_code == 200:
+                if os.path.isdir(rf'../Servers/{self.new_name}_{self.select_v}') is False:
+                    os.mkdir(rf'../Servers/{self.new_name}_{self.select_v}')
+                with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'wb') as f:
+                    for chunk in jar_get.iter_content(8192):
+                        f.write(chunk)
 
     def GetJarList(self) -> list:
         """返回可用版本列表"""
@@ -54,4 +58,5 @@ class BackendMethod(Action):
         return v_list
 
 
-b = BackendMethod()
+# b = BackendMethod()
+# b.DownloadJar()
