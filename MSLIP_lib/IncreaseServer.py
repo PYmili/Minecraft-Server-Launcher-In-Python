@@ -81,3 +81,4 @@ class AddButtonWindow(QWidget):
         screen_center = QDesktopWidget().availableGeometry().center()
         frame_geometry.moveCenter(screen_center)
         self.move(frame_geometry.topLeft())
+
