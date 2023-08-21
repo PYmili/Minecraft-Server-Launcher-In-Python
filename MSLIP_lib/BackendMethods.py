@@ -5,10 +5,10 @@ import requests
 from fake_user_agent import user_agent
 from lxml import etree
 
-from Action import Action
+from Action import ServerAction
 
 
-class BackendMethod(Action):
+class BackendMethod(ServerAction):
     def __init__(self, ser_name: str = 'Test_1.18',
                  xmx: str = '2',
                  xms: str = '1',
@@ -32,9 +32,10 @@ class BackendMethod(Action):
 
     def startServer(self) -> subprocess.Popen:
         """此函数由启动服务器事件调用"""
-        print(f'java -Xmx{self.xmx}g -Xms{self.xms}g -jar ../Servers/{self.ser_name}/server.jar')
+        path = os.path.dirname(os.path.realpath(__file__))[:-10] + f'/Servers/{self.ser_name}/server.jar'
+        print(f'cd../Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}')
         server_process = subprocess.Popen(
-            f'java -Xmx{self.xmx}g -Xms{self.xms}g -jar ../Servers/{self.ser_name}/server.jar',
+            fr'cd../Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}',
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
@@ -48,7 +49,7 @@ class BackendMethod(Action):
         jar_url = html.xpath('//tr[5]//a[last()]/@href')[0]
         jar_req = requests.get(url=jar_url, headers=self.requests_head)
         os.mkdir(rf'../Servers/{self.new_name}_{self.select_v}')
-        with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'wb', encoding='utf-8') as f:
+        with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'wb') as f:
             f.write(jar_req.content)
 
     def GetJarList(self) -> list:
