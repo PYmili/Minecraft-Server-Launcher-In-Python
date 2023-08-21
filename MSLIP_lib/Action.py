@@ -27,7 +27,7 @@ class BackendMethod(Action):
     def __init__(self, ser_name: str = 'Test_1.18',
                  xmx: str = '4096',
                  xms: str = '2048',
-                 select_v: str = '1.18',
+                 select_v: str = '1.19',
                  new_name: str = 'default',
                  ):
         """
@@ -40,8 +40,8 @@ class BackendMethod(Action):
         self.ser_name = ser_name
         self.select_v = select_v
         self.new_name = new_name
-        self.spigot_url = f'https://mcversions.net/download/{self.select_v}'
-        self.requests_head = {'User-Agent': user_agent()}
+        self.spigot_url = f'https://minecraft.fandom.com/zh/wiki/Java版{self.select_v}'
+        self.requests_head = {'User-Agent': user_agent()}  #
         self.xmx = xmx
         self.xms = xms
 
@@ -54,11 +54,15 @@ class BackendMethod(Action):
         """此方法由下载事件调用"""
         req = requests.get(url=self.spigot_url, headers=self.requests_head)
         html = etree.HTML(req.text)
-        jar_url = html.xpath(f'//a[@download="minecraft_server-{self.select_v}.jar"]/@href')[0]
+        jar_url = html.xpath('//tr[5]//a[last()]/@href')[0]
+        print(jar_url)
         jar_req = requests.get(url=jar_url, headers=self.requests_head)
         os.mkdir(rf'../Servers/{self.new_name}_{self.select_v}')
-        with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'ab', encoding='utf-8') as f:
+        with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'wb', encoding='utf-8') as f:
             f.write(jar_req.content)
+
+    def GetJarList(self) -> list:
+        pass
 
 
 b = BackendMethod()
