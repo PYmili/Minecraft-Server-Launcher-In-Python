@@ -62,7 +62,6 @@ class StartWindow(QWidget):
         server_process = back_method.startServer()
         for out_log in iter(server_process.stdout.readline, b''):
             self.terminal_window.setText(out_log.decode('gbk'))
-        server_process.stdout.close()
 
     def initUI(self):
         main_layout = QVBoxLayout()
@@ -127,6 +126,7 @@ class MainWindow(QMainWindow):
         self.center_window()
 
         # 设置整个窗口的样式表
+
         # self.setStyleSheet("background-color: rgb(30, 30, 30); color: white;")
 
         # 创建左侧菜单
