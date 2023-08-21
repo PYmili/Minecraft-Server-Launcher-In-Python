@@ -7,7 +7,12 @@ class Action(ABC):
     @abstractmethod
     def startServer(self) -> None:
         """启动服务器"""
-    
+
     @abstractmethod
     def DownloadJar(self) -> None:
         """下载.jar文件"""
+
+
+class A(Action):
+    def __init__(self):
+        pass
