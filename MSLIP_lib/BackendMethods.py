@@ -10,8 +10,8 @@ from Action import Action
 
 class BackendMethod(Action):
     def __init__(self, ser_name: str = 'Test_1.18',
-                 xmx: str = '4096',
-                 xms: str = '2048',
+                 xmx: str = '2',
+                 xms: str = '1',
                  select_v: str = '1.19',
                  new_name: str = 'default',
                  ):
@@ -30,10 +30,16 @@ class BackendMethod(Action):
         self.xmx = xmx
         self.xms = xms
 
-    def startServer(self) -> None:
+    def startServer(self) -> subprocess.Popen:
         """此函数由启动服务器事件调用"""
-        subprocess.Popen(f'java -{self.xmx} -{self.xms} -jar ../Servers/{self.ser_name}/server.jar',
-                         shell=True)
+        print(f'java -Xmx{self.xmx}g -Xms{self.xms}g -jar ../Servers/{self.ser_name}/server.jar')
+        server_process = subprocess.Popen(
+            f'java -Xmx{self.xmx}g -Xms{self.xms}g -jar ../Servers/{self.ser_name}/server.jar',
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        print('ok')
+        return server_process
 
     def DownloadJar(self) -> None:
         """此方法由下载事件调用"""
@@ -54,4 +60,4 @@ class BackendMethod(Action):
         return v_list
 
 
-b = BackendMethod()
+back_method = BackendMethod()
