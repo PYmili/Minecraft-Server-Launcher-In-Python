@@ -16,3 +16,9 @@ class Action(ABC):
 class BackendMethod(Action):
     def __init__(self, a):
         self.b = a
+
+    def startServer(self) -> None:
+        pass
+
+    def DownloadJar(self) -> None:
+        pass
