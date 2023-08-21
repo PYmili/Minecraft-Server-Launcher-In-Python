@@ -14,5 +14,5 @@ class Action(ABC):
 
 
 class A(Action):
-    def __init__(self):
-        pass
+    def __init__(self, a):
+        self.a = a
