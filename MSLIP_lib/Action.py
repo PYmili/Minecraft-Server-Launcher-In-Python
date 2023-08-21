@@ -13,6 +13,6 @@ class Action(ABC):
         """下载.jar文件"""
 
 
-class A(Action):
+class BackendMethod(Action):
     def __init__(self, a):
         self.a = a
