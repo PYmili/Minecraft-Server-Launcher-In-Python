@@ -13,6 +13,10 @@ class Action(ABC):
     def DownloadJar(self) -> None:
         """下载.jar文件"""
 
+    @abstractmethod
+    def GetJarList(self) -> list:
+        "获取当前可用核心列表"
+
 
 class BackendMethod(Action):
     def __init__(self, spigot_v: str, xmx: str, xms: str):
