@@ -55,7 +55,6 @@ class BackendMethod(Action):
         req = requests.get(url=self.spigot_url, headers=self.requests_head)
         html = etree.HTML(req.text)
         jar_url = html.xpath('//tr[5]//a[last()]/@href')[0]
-        print(jar_url)
         jar_req = requests.get(url=jar_url, headers=self.requests_head)
         os.mkdir(rf'../Servers/{self.new_name}_{self.select_v}')
         with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'wb', encoding='utf-8') as f:
