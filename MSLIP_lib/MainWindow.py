@@ -18,7 +18,7 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtCore import QSize
 
-from .StartWindow import StartWindow
+from .CreateWindow import CreateWindow
 from .TerminalWindow import TerminalWindow
 
 
@@ -53,14 +53,14 @@ class MainWindow(QMainWindow):
         self.menu_list.setStyleSheet("border: none; background-color: rgb(50, 50, 50); color: white;")
 
         # 添加左侧菜单按钮
-        self.add_menu_item("启动", 0)
-        self.add_menu_item("终端", 1)
+        self.add_menu_item("创建", 0)
+        self.add_menu_item("启动", 1)
         self.add_menu_item("下载", 2)
         self.add_menu_item("Mods", 3)
 
         # 创建右侧子窗口
         self.stacked_widget = QStackedWidget()
-        self.start = StartWindow()
+        self.start = CreateWindow()
         self.terminal = TerminalWindow()
         self.stacked_widget.addWidget(self.start)
         self.stacked_widget.addWidget(self.terminal)

@@ -33,8 +33,11 @@ class AddButtonWindow(QWidget):
 
         self.setWindowTitle("SetingSevers")  # 设置窗口标题
         self.setGeometry(0, 0, 480, 270)
-        self.setMaximumSize(960, 540)
-        self.center_window()
+        # self.setMaximumSize(960, 540)
+        frame_geometry = self.frameGeometry()
+        screen_center = QDesktopWidget().availableGeometry().center()
+        frame_geometry.moveCenter(screen_center)
+        self.move(frame_geometry.topLeft())
 
         # 设置样式表
         self.setStyleSheet("""
@@ -189,12 +192,6 @@ class AddButtonWindow(QWidget):
             self.UpdataCardFun()
             self.close()
 
-    def center_window(self):
-        frame_geometry = self.frameGeometry()
-        screen_center = QDesktopWidget().availableGeometry().center()
-        frame_geometry.moveCenter(screen_center)
-        self.move(frame_geometry.topLeft())
-
 
 class JavaLocatorThread(QThread):
     result_ready = pyqtSignal(str)
@@ -231,6 +228,13 @@ class NewServerThread(QThread):
             shutil.copy(
                 self.NewServerData['framework'],
                 f"./Servers/{self.NewServerData['ServerName']}"
+            )
+
+            self.NewServerData[
+                'framework'
+            ] = os.path.join(
+                f".\\Servers\\{self.NewServerData['ServerName']}",
+                os.path.split(self.NewServerData['framework'])[-1]
             )
 
             self.NewServerData["CreationTime"] = present_time

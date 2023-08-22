@@ -17,11 +17,10 @@ from PyQt5.QtCore import Qt
 from .IncreaseServer import AddButtonWindow
 
 
-class StartWindow(QWidget):
+class CreateWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.add_button_window = None
-        self.StartButton = QPushButton("启动", self)
         self.AddButton = QPushButton("添加", self)
         self.gridLayout = QGridLayout()  # 使用 QGridLayout 作为网格布局
         self.initUI()
@@ -29,21 +28,12 @@ class StartWindow(QWidget):
     def initUI(self):
         main_layout = QVBoxLayout()
 
-        # 设置启动按钮样式
-        self.StartButton.setFont(QFont("Arial", 14, QFont.Bold))
-        self.StartButton.setStyleSheet(
-            "QPushButton { background-color: green; color: white; border: none; padding: 10px 20px; }"
-            "QPushButton:hover { background-color: darkgreen; }"
-            "QPushButton:pressed { background-color: lightgreen; }"
-        )
-        self.StartButton.setCursor(Qt.PointingHandCursor)
-
         # 设置添加按钮样式
         self.AddButton.setFont(QFont("Arial", 14, QFont.Bold))
         self.AddButton.setStyleSheet(
-            "QPushButton { background-color: blue; color: white; border: none; padding: 10px 20px; }"
-            "QPushButton:hover { background-color: darkblue; }"
-            "QPushButton:pressed { background-color: lightcoral; }"
+            "QPushButton { background-color: green; color: white; border: none; padding: 10px 20px; }"
+            "QPushButton:hover { background-color: darkgreen; }"
+            "QPushButton:pressed { background-color: lightgreen; }"
         )
         self.AddButton.setCursor(Qt.PointingHandCursor)
         self.AddButton.clicked.connect(self.addButtonShow)  # 连接添加按钮的点击事件
@@ -53,7 +43,6 @@ class StartWindow(QWidget):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         button_layout.addWidget(self.AddButton, alignment=Qt.AlignRight | Qt.AlignBottom)
-        button_layout.addWidget(self.StartButton, alignment=Qt.AlignRight | Qt.AlignBottom)
         button_group.setLayout(button_layout)
         button_group.setStyleSheet("QGroupBox { border: none; }")
 
