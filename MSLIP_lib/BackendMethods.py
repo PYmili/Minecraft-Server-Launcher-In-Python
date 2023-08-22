@@ -39,12 +39,13 @@ class BackendMethod(ServerAction):
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
+        return server_process
+
+    def auto_change(self):
         with open(fr'./Servers/{self.ser_name}/eula.txt', 'w', encoding='utf-8') as f:
             f.write("""#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).
-#Tue Aug 22 00:25:11 CST 2023
-eula=true""")
-        print('ok')
-        return server_process
+        #Tue Aug 22 00:25:11 CST 2023
+        eula=true""")
 
     def DownloadJar(self) -> None:
         """此方法由下载事件调用"""
@@ -62,6 +63,7 @@ eula=true""")
         for paths, dirs, files in os.walk('.\\Servers'):
             for file in files:
                 if os.path.splitext(file)[-1] == ".jar":
+                    print(os.path.join(paths, file))
                     result.append(os.path.join(paths, file))
 
         return result
