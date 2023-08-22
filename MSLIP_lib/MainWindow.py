@@ -60,8 +60,10 @@ class MainWindow(QMainWindow):
 
         # 创建右侧子窗口
         self.stacked_widget = QStackedWidget()
-        self.stacked_widget.addWidget(StartWindow())
-        self.stacked_widget.addWidget(TerminalWindow())
+        self.start = StartWindow()
+        self.terminal = TerminalWindow()
+        self.stacked_widget.addWidget(self.start)
+        self.stacked_widget.addWidget(self.terminal)
         self.stacked_widget.addWidget(SubWindow("下载资源"))
         self.stacked_widget.addWidget(SubWindow("管理Mods"))
 
@@ -130,4 +132,4 @@ class MainWindow(QMainWindow):
         super().resizeEvent(event)
 
         # 在窗口大小变化时更新背景图片
-        self.updateBackgroundImage("../resources/images/bg_0.png")
+        self.updateBackgroundImage("./resources/images/bg_0.png")
