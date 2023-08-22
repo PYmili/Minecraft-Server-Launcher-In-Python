@@ -23,7 +23,7 @@ from PyQt5.QtCore import (
     pyqtSignal
 )
 
-from BackendMethods import BackendMethod
+from .BackendMethods import BackendMethod
 
 
 class AddButtonWindow(QWidget):
@@ -185,8 +185,9 @@ class AddButtonWindow(QWidget):
             self, "结果", result,
             QMessageBox.Yes
         )
-        self.UpdataCardFun()
-        self.close()
+        if result == "创建成功！":
+            self.UpdataCardFun()
+            self.close()
 
     def center_window(self):
         frame_geometry = self.frameGeometry()
@@ -216,25 +217,25 @@ class NewServerThread(QThread):
 
     def run(self):
         present_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-        rfp = open("Servers.json", "r", encoding="utf-8")
+        rfp = open("./Servers/Servers.json", "r", encoding="utf-8")
         ServersRead = json.loads(rfp.read())
         rfp.close()
 
         try:
-            if os.path.isdir(f"../Servers/{self.NewServerData['ServerName']}") is True:
+            if os.path.isdir(f"./Servers/{self.NewServerData['ServerName']}") is True:
                 self.result_ready.emit("服务器文件夹已存在！")
                 return
-            os.mkdir(f"../Servers/{self.NewServerData['ServerName']}")
+            os.mkdir(f"./Servers/{self.NewServerData['ServerName']}")
             if os.path.isfile(self.NewServerData['framework']) is False:
                 self.result_ready.emit(f"“{self.NewServerData['framework']}”文件不存在！")
             shutil.copy(
                 self.NewServerData['framework'],
-                f"../Servers/{self.NewServerData['ServerName']}"
+                f"./Servers/{self.NewServerData['ServerName']}"
             )
 
             self.NewServerData["CreationTime"] = present_time
             ServersRead[self.NewServerData['ServerName']] = self.NewServerData
-            with open("Servers.json", "w+", encoding="utf-8") as wfp:
+            with open("./Servers/Servers.json", "w+", encoding="utf-8") as wfp:
                 wfp.write(json.dumps(ServersRead, indent=4))
 
             self.result_ready.emit("创建成功！")

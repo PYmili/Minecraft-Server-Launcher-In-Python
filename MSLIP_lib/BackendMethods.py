@@ -5,7 +5,7 @@ import requests
 from fake_user_agent import user_agent
 from lxml import etree
 
-from Action import ServerAction
+from .Action import ServerAction
 
 
 class BackendMethod(ServerAction):
@@ -33,13 +33,13 @@ class BackendMethod(ServerAction):
     def startServer(self) -> subprocess.Popen:
         """此函数由启动服务器事件调用"""
         path = os.path.dirname(os.path.realpath(__file__))[:-10] + f'/Servers/{self.ser_name}/server.jar'
-        print(f'cd../Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}')
+        print(f'cd./Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}')
         server_process = subprocess.Popen(
-            fr'cd../Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}',
+            fr'cd./Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}',
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
-        with open(fr'../Servers/{self.ser_name}/eula.txt', 'w', encoding='utf-8') as f:
+        with open(fr'./Servers/{self.ser_name}/eula.txt', 'w', encoding='utf-8') as f:
             f.write("""#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).
 #Tue Aug 22 00:25:11 CST 2023
 eula=true""")
@@ -52,14 +52,14 @@ eula=true""")
         html = etree.HTML(req.text)
         jar_url = html.xpath('//tr[5]//a[last()]/@href')[0]
         jar_req = requests.get(url=jar_url, headers=self.requests_head)
-        os.mkdir(rf'../Servers/{self.new_name}_{self.select_v}')
-        with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'wb') as f:
+        os.mkdir(rf'./Servers/{self.new_name}_{self.select_v}')
+        with open(rf'./Servers/{self.new_name}_{self.select_v}/server.jar', 'wb') as f:
             f.write(jar_req.content)
 
     def GetJarList(self) -> list:
         """返回可用版本列表"""
         result = []
-        for paths, dirs, files in os.walk('..\\Servers'):
+        for paths, dirs, files in os.walk('.\\Servers'):
             for file in files:
                 result.append(os.path.join(paths, file))
 
