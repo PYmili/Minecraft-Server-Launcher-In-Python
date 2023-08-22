@@ -1,5 +1,6 @@
 import sys
 import json
+import os
 
 from PyQt5.QtWidgets import (
     QApplication,
@@ -92,27 +93,37 @@ class StartWindow(QWidget):
 
         self.setLayout(main_layout)
 
+        self.UpdateCard()
+
     def addButtonShow(self) -> None:
-        self.add_button_window = AddButtonWindow(self.ReadServers)
+        self.add_button_window = AddButtonWindow(self.UpdateCard)
         self.add_button_window.show()
         
-    def ReadServers(self) -> None:
+    def UpdateCard(self) -> None:
         with open("Servers.json", "r", encoding="utf-8") as rfp:
             ServerData = json.loads(rfp.read())
             
         for i in ServerData.keys():
             self.addCard(
                 ServerData[i]['ServerName'] +
-                "\n使用框架" +
-                ServerData[i]['framework'] +
-                "\n创建时间" +
+                "\n使用框架：" +
+                os.path.split(ServerData[i]['framework'])[-1] +
+                "\n创建时间：" +
                 ServerData[i]['CreationTime']
             )
 
     def addCard(self, text: str):
         card_button = QPushButton(text, self)
+        font = QFont()
+        font.setFamily("Arial")
+        font.setPointSize(10)
+        font.setBold(True)
+        card_button.setFont(font)
         card_button.setStyleSheet(
-            "QPushButton { background-color: rgba(200, 200, 200, 150); border-radius: 5px; padding: 10px; }"
+            "QPushButton { background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #3399FF, stop: 1 #0066CC);"
+            "border-radius: 5px; padding: 10px; color: white; }"
+            "QPushButton:hover { background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #55aaff, stop: 1 #3399FF); }"
+            "QPushButton:pressed { background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #0066CC, stop: 1 #004499); }"
         )
 
         self.gridLayout.addWidget(card_button)  # 在网格中添加卡片按钮
