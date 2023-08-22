@@ -1,3 +1,5 @@
+import subprocess
+
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -8,8 +10,15 @@ from PyQt5.QtWidgets import (
     QLabel,
     QComboBox,
     QFileDialog,
-    QDesktopWidget
+    QDesktopWidget,
 )
+
+from PyQt5.QtCore import (
+    QThread,
+    pyqtSignal
+)
+
+from BackendMethods import BackendMethod
 
 
 class AddButtonWindow(QWidget):
@@ -27,20 +36,29 @@ class AddButtonWindow(QWidget):
         group1 = QGroupBox()
         layout1 = QVBoxLayout()
 
-        select_file_button = QPushButton("选择java")  # 添加选择文件按钮
-        select_file_button.clicked.connect(self.onSelectFileClicked)  # 连接选择文件按钮的点击事件
-        AutoSearch = QPushButton("自动查找Java")
-        self.input_box = QLineEdit()
+        select_file_button = QPushButton("选择java")
+        select_file_button.clicked.connect(self.onSelectFileClicked)
+
+        # 查找java的线程
+        # AutoSearchJavaThreedResult用于接受返回
+        self.AutoSearchJavaThreadResult = ""
+        self.AutoSearchJavaThread = JavaLocatorThread()
+        self.AutoSearchJavaThread.result_ready.connect(self.AutoSearchJavaThreadEvent)
+        AutoSearchJava = QPushButton("自动查找Java")
+        AutoSearchJava.clicked.connect(self.AutoSearchJavaThreadEvent)
+
+        self.JavaPathInputBox = QLineEdit()
 
         layout1.addWidget(select_file_button)
-        layout1.addWidget(AutoSearch)
-        layout1.addWidget(self.input_box)
+        layout1.addWidget(AutoSearchJava)
+        layout1.addWidget(self.JavaPathInputBox)
         group1.setLayout(layout1)
 
         # 第二个组
         group2 = QGroupBox()
         layout2 = QHBoxLayout()
         self.Xmx = QLineEdit()
+        self.Xmx.setText("1024M")
         layout2.addWidget(QLabel("最大内存"))
         layout2.addWidget(self.Xmx)
         layout2.addWidget(QLabel("M/G"))
@@ -50,6 +68,7 @@ class AddButtonWindow(QWidget):
         group3 = QGroupBox()
         layout3 = QHBoxLayout()
         self.Xms = QLineEdit()
+        self.Xms.setText("1024M")
         layout3.addWidget(QLabel("最小内存"))
         layout3.addWidget(self.Xms)
         layout3.addWidget(QLabel("M/G"))
@@ -59,7 +78,8 @@ class AddButtonWindow(QWidget):
         group4 = QGroupBox()
         layout4 = QVBoxLayout()
         self.comboBox = QComboBox()  # 创建下拉菜单
-        layout4.addWidget(QLabel("选择框架:"))
+        self.comboBox.addItems(BackendMethod().GetJarList())
+        layout4.addWidget(QLabel("选择已下载的框架:"))
         layout4.addWidget(self.comboBox)
         group4.setLayout(layout4)
 
@@ -76,9 +96,27 @@ class AddButtonWindow(QWidget):
         if file_path:
             self.input_box.setText(file_path)
 
+    def AutoSearchJavaThreadEvent(self, result: str = False):
+        if result:
+            self.JavaPathInputBox.setText(result)
+        else:
+            self.JavaPathInputBox.setText("正在查找...")
+            self.AutoSearchJavaThread.start()
+
     def center_window(self):
         frame_geometry = self.frameGeometry()
         screen_center = QDesktopWidget().availableGeometry().center()
         frame_geometry.moveCenter(screen_center)
         self.move(frame_geometry.topLeft())
 
+
+class JavaLocatorThread(QThread):
+    result_ready = pyqtSignal(str)
+
+    def run(self):
+        try:
+            # 使用subprocess来运行命令行查找Java路径
+            result = subprocess.check_output(['where', 'java']).decode('utf-8')
+            self.result_ready.emit(result)
+        except subprocess.CalledProcessError:
+            self.result_ready.emit("Java路径未找到")
