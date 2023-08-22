@@ -27,7 +27,11 @@ from .BackendMethods import BackendMethod
 
 
 class AddButtonWindow(QWidget):
+    """添加服务器配置界面"""
     def __init__(self, UpdateCardFun: object):
+        """
+        :param UpdateCardFun: 用于添加成功后更新CreateWindow中的卡片
+        """
         super().__init__()
         self.UpdataCardFun = UpdateCardFun
 
@@ -41,7 +45,7 @@ class AddButtonWindow(QWidget):
 
         # 设置样式表
         self.setStyleSheet("""
-         QPushButton {
+        QPushButton {
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -144,12 +148,14 @@ class AddButtonWindow(QWidget):
 
         self.NewServer = None
 
+    # 选择java的事件
     def onSelectFileClicked(self):
         file_dialog = QFileDialog(self)
         file_path, _ = file_dialog.getOpenFileName(self, "选择文件", "", "All Files (*)")
         if file_path:
             self.JavaPathInputBox.setText(file_path)
 
+    # 自动选择java
     def AutoSearchJavaThreadEvent(self, result: str = False):
         if result:
             self.JavaPathInputBox.setText(result)
@@ -157,7 +163,9 @@ class AddButtonWindow(QWidget):
             self.JavaPathInputBox.setText("正在查找...")
             self.AutoSearchJavaThread.start()
 
+    # 点击确认，创建服务器事件
     def onConfirmClicked(self):
+        # 用于存放新服务器的参数
         new_server_data = {
             "ServerName": str(self.setServerName.text()),
             "java": str(self.JavaPathInputBox.text().strip('\r\n')),
@@ -179,21 +187,25 @@ class AddButtonWindow(QWidget):
                 QMessageBox.Yes
             )
             return
+        # 创建新服务器线程，并且附带返回值
         self.NewServer = NewServerThread(new_server_data)
         self.NewServer.result_ready.connect(self.NewServerThreadEvent)
         self.NewServer.start()
 
+    # 判断服务器是否创建成功，并且返回结果。
     def NewServerThreadEvent(self, result: str):
         QMessageBox.information(
             self, "结果", result,
             QMessageBox.Yes
         )
         if result == "创建成功！":
+            # 更新卡片，关闭窗口
             self.UpdataCardFun()
             self.close()
 
 
 class JavaLocatorThread(QThread):
+    """查找java路径线程"""
     result_ready = pyqtSignal(str)
 
     def run(self):
@@ -206,13 +218,18 @@ class JavaLocatorThread(QThread):
 
 
 class NewServerThread(QThread):
+    """创建新服务器线程"""
     result_ready = pyqtSignal(str)
 
     def __init__(self, NewServerData: dict):
+        """
+        :param NewServerData: dict数据，存放新服务器的参数
+        """
         super(NewServerThread, self).__init__(parent=None)
         self.NewServerData = NewServerData
 
     def run(self):
+        # 当前时间，用于显示服务器创建时间。
         present_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         rfp = open("./Servers/Servers.json", "r", encoding="utf-8")
         ServersRead = json.loads(rfp.read())
@@ -222,14 +239,18 @@ class NewServerThread(QThread):
             if os.path.isdir(f"./Servers/{self.NewServerData['ServerName']}") is True:
                 self.result_ready.emit("服务器文件夹已存在！")
                 return
+            # 在Servers文件夹中创建服务器名字的文件夹
             os.mkdir(f"./Servers/{self.NewServerData['ServerName']}")
             if os.path.isfile(self.NewServerData['framework']) is False:
                 self.result_ready.emit(f"“{self.NewServerData['framework']}”文件不存在！")
+
+            # 复制用户指定的服务器内核至服务器名字的文件夹
             shutil.copy(
                 self.NewServerData['framework'],
                 f"./Servers/{self.NewServerData['ServerName']}"
             )
 
+            # 更新服务器内核的位置
             self.NewServerData[
                 'framework'
             ] = os.path.join(

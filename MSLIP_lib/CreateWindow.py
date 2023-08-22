@@ -18,6 +18,7 @@ from .IncreaseServer import AddButtonWindow
 
 
 class CreateWindow(QWidget):
+    """创建服务器界面"""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.add_button_window = None
@@ -56,10 +57,12 @@ class CreateWindow(QWidget):
 
         self.UpdateCard()
 
+    # 显示添加服务器配置界面
     def addButtonShow(self) -> None:
         self.add_button_window = AddButtonWindow(self.UpdateCard)
         self.add_button_window.show()
 
+    # 更新卡片
     def UpdateCard(self) -> None:
         with open("./Servers/Servers.json", "r", encoding="utf-8") as rfp:
             ServerData = json.loads(rfp.read())
@@ -73,6 +76,7 @@ class CreateWindow(QWidget):
                 ServerData[i]['CreationTime']
             )
 
+    # 添加一个卡片用于显示当前已创建的服务器列表
     def addCard(self, text: str):
         card_button = QPushButton(text, self)
         font = QFont()

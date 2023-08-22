@@ -23,6 +23,7 @@ from .TerminalWindow import TerminalWindow
 
 
 class SubWindow(QWidget):
+    """切换界面测试"""
     def __init__(self, content):
         super().__init__()
         self.content = content
@@ -36,6 +37,7 @@ class SubWindow(QWidget):
 
 
 class MainWindow(QMainWindow):
+    """主界面"""
     def __init__(self):
         super().__init__()
 
@@ -44,9 +46,6 @@ class MainWindow(QMainWindow):
 
         # 居中窗口
         self.center_window()
-
-        # 设置整个窗口的样式表
-        # self.setStyleSheet("background-color: rgb(30, 30, 30); color: white;")
 
         # 创建左侧菜单
         self.menu_list = QListWidget()
@@ -60,15 +59,14 @@ class MainWindow(QMainWindow):
 
         # 创建右侧子窗口
         self.stacked_widget = QStackedWidget()
-        self.start = CreateWindow()
-        self.terminal = TerminalWindow()
-        self.stacked_widget.addWidget(self.start)
-        self.stacked_widget.addWidget(self.terminal)
+        self.Create = CreateWindow()
+        self.Terminal = TerminalWindow()
+        self.stacked_widget.addWidget(self.Create)
+        self.stacked_widget.addWidget(self.Terminal)
         self.stacked_widget.addWidget(SubWindow("下载资源"))
         self.stacked_widget.addWidget(SubWindow("管理Mods"))
 
-        self.current_sub_window_index = 0
-
+        self.current_sub_window_index = 0   # 记录当前界面是哪一个
         self.menu_list.itemClicked.connect(self.change_sub_window)
 
         # 布局
@@ -101,29 +99,31 @@ class MainWindow(QMainWindow):
         # 使用临时变量来传递 sub_windows
         button.clicked.connect(lambda :self.Button_sub_window(index))
 
+    # 点击QListWidget中的按钮，切换QStackedWidget窗口
     def Button_sub_window(self, index):
         if index != self.current_sub_window_index:
             self.stacked_widget.setCurrentIndex(index)
             self.current_sub_window_index = index
 
+    # 点击QListWidget，切换QStackedWidget中的窗口
     def change_sub_window(self, item):
         selected_index = self.menu_list.row(item)
         if selected_index != self.current_sub_window_index:
             self.stacked_widget.setCurrentIndex(selected_index)
             self.current_sub_window_index = selected_index
 
+    # 居中窗口方法
     def center_window(self):
         frame_geometry = self.frameGeometry()
         screen_center = QDesktopWidget().availableGeometry().center()
         frame_geometry.moveCenter(screen_center)
         self.move(frame_geometry.topLeft())
 
+    # 更新 背景图片 的方法
     def updateBackgroundImage(self, img_path):
         palette = QPalette()
         pix = QPixmap(img_path)
-
         pix = pix.scaled(self.width(), self.height())
-
         palette.setBrush(QPalette.Background, QBrush(pix))
         self.setPalette(palette)
 
