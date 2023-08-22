@@ -58,11 +58,12 @@ eula=true""")
 
     def GetJarList(self) -> list:
         """返回可用版本列表"""
-        v_list = []
-        server_list = os.listdir(r'../Servers')
-        for i in server_list:
-            v_list.append(i.split('_')[-1])
-        return v_list
+        result = []
+        for paths, dirs, files in os.walk(r'../Servers')
+            for file in files:
+                result.append(os.path.join(paths, file))
+
+        return result
 
 
 back_method = BackendMethod()
