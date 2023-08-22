@@ -1,4 +1,8 @@
+import json
+import os
+import shutil
 import subprocess
+from datetime import datetime
 
 from PyQt5.QtWidgets import (
     QWidget,
@@ -11,6 +15,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QFileDialog,
     QDesktopWidget,
+    QMessageBox,
 )
 
 from PyQt5.QtCore import (
@@ -22,13 +27,38 @@ from BackendMethods import BackendMethod
 
 
 class AddButtonWindow(QWidget):
-    def __init__(self):
+    def __init__(self, UpdateCardFun: object):
         super().__init__()
+        self.UpdataCardFun = UpdateCardFun
 
         self.setWindowTitle("SetingSevers")  # 设置窗口标题
         self.setGeometry(0, 0, 480, 270)
         self.setMaximumSize(960, 540)
         self.center_window()
+
+        # 设置样式表
+        self.setStyleSheet("""
+         QPushButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        QPushButton:hover {
+            background-color: #45a049;
+        }
+        QGroupBox {
+            border: 1px solid gray;
+            border-radius: 4px;
+            margin-top: 8px;
+            padding: 8px;
+        }
+        """)
 
         main_layout = QVBoxLayout()
 
@@ -46,9 +76,7 @@ class AddButtonWindow(QWidget):
         self.AutoSearchJavaThread.result_ready.connect(self.AutoSearchJavaThreadEvent)
         AutoSearchJava = QPushButton("自动查找Java")
         AutoSearchJava.clicked.connect(self.AutoSearchJavaThreadEvent)
-
         self.JavaPathInputBox = QLineEdit()
-
         layout1.addWidget(select_file_button)
         layout1.addWidget(AutoSearchJava)
         layout1.addWidget(self.JavaPathInputBox)
@@ -83,18 +111,41 @@ class AddButtonWindow(QWidget):
         layout4.addWidget(self.comboBox)
         group4.setLayout(layout4)
 
+        # 第五个
+        group5 = QGroupBox()
+        layout5 = QHBoxLayout()
+        self.setServerName = QLineEdit()
+        layout5.addWidget(QLabel("服务器名字："))
+        layout5.addWidget(self.setServerName)
+        group5.setLayout(layout5)
+
+        # 第六个组
+        group6 = QGroupBox()
+        layout6 = QHBoxLayout()
+        confirm_button = QPushButton("确认")
+        confirm_button.clicked.connect(self.onConfirmClicked)
+        cancel_button = QPushButton("取消")
+        cancel_button.clicked.connect(self.close)
+        layout6.addWidget(confirm_button)
+        layout6.addWidget(cancel_button)
+        group6.setLayout(layout6)
+
         main_layout.addWidget(group1)
         main_layout.addWidget(group2)
         main_layout.addWidget(group3)
         main_layout.addWidget(group4)
+        main_layout.addWidget(group5)
+        main_layout.addWidget(group6)
 
         self.setLayout(main_layout)
+
+        self.NewServer = None
 
     def onSelectFileClicked(self):
         file_dialog = QFileDialog(self)
         file_path, _ = file_dialog.getOpenFileName(self, "选择文件", "", "All Files (*)")
         if file_path:
-            self.input_box.setText(file_path)
+            self.JavaPathInputBox.setText(file_path)
 
     def AutoSearchJavaThreadEvent(self, result: str = False):
         if result:
@@ -102,6 +153,40 @@ class AddButtonWindow(QWidget):
         else:
             self.JavaPathInputBox.setText("正在查找...")
             self.AutoSearchJavaThread.start()
+
+    def onConfirmClicked(self):
+        new_server_data = {
+            "ServerName": str(self.setServerName.text()),
+            "java": str(self.JavaPathInputBox.text().strip('\r\n')),
+            "framework": str(self.comboBox.currentText()),
+            "xmx": str(self.Xmx.text()),
+            "xms": str(self.Xms.text())
+        }
+        errorMsg = ""
+        if len(new_server_data['java']) == 0:
+            errorMsg = "未选择Java"
+        elif len(new_server_data['xmx']) == 0 or len(new_server_data['xms']) == 0:
+            errorMsg = "请设置内存"
+        elif len(new_server_data['ServerName']) == 0:
+            errorMsg = "未设置名字！"
+
+        if errorMsg:
+            QMessageBox.warning(
+                self, "错误", errorMsg,
+                QMessageBox.Yes
+            )
+            return
+        self.NewServer = NewServerThread(new_server_data)
+        self.NewServer.result_ready.connect(self.NewServerThreadEvent)
+        self.NewServer.start()
+
+    def NewServerThreadEvent(self, result: str):
+        QMessageBox.information(
+            self, "结果", result,
+            QMessageBox.Yes
+        )
+        self.UpdataCardFun()
+        self.close()
 
     def center_window(self):
         frame_geometry = self.frameGeometry()
@@ -120,3 +205,38 @@ class JavaLocatorThread(QThread):
             self.result_ready.emit(result)
         except subprocess.CalledProcessError:
             self.result_ready.emit("Java路径未找到")
+
+
+class NewServerThread(QThread):
+    result_ready = pyqtSignal(str)
+
+    def __init__(self, NewServerData: dict):
+        super(NewServerThread, self).__init__(parent=None)
+        self.NewServerData = NewServerData
+
+    def run(self):
+        present_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+        rfp = open("Servers.json", "r", encoding="utf-8")
+        ServersRead = json.loads(rfp.read())
+        rfp.close()
+
+        try:
+            if os.path.isdir(f"../Servers/{self.NewServerData['ServerName']}") is True:
+                self.result_ready.emit("服务器文件夹已存在！")
+                return
+            os.mkdir(f"../Servers/{self.NewServerData['ServerName']}")
+            if os.path.isfile(self.NewServerData['framework']) is False:
+                self.result_ready.emit(f"“{self.NewServerData['framework']}”文件不存在！")
+            shutil.copy(
+                self.NewServerData['framework'],
+                f"../Servers/{self.NewServerData['ServerName']}"
+            )
+
+            self.NewServerData["CreationTime"] = present_time
+            ServersRead[self.NewServerData['ServerName']] = self.NewServerData
+            with open("Servers.json", "w+", encoding="utf-8") as wfp:
+                wfp.write(json.dumps(ServersRead, indent=4))
+
+            self.result_ready.emit("创建成功！")
+        except Exception as e:
+            self.result_ready.emit(f"创建失败！", e)

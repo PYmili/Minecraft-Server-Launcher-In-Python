@@ -1,4 +1,6 @@
 import sys
+import json
+
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -27,6 +29,7 @@ from PyQt5.QtCore import (
 
 # 添加服务器界面
 from IncreaseServer import AddButtonWindow
+
 
 class SubWindow(QWidget):
     def __init__(self, content):
@@ -90,8 +93,21 @@ class StartWindow(QWidget):
         self.setLayout(main_layout)
 
     def addButtonShow(self) -> None:
-        self.add_button_window = AddButtonWindow()
+        self.add_button_window = AddButtonWindow(self.ReadServers)
         self.add_button_window.show()
+        
+    def ReadServers(self) -> None:
+        with open("Servers.json", "r", encoding="utf-8") as rfp:
+            ServerData = json.loads(rfp.read())
+            
+        for i in ServerData.keys():
+            self.addCard(
+                ServerData[i]['ServerName'] +
+                "\n使用框架" +
+                ServerData[i]['framework'] +
+                "\n创建时间" +
+                ServerData[i]['CreationTime']
+            )
 
     def addCard(self, text: str):
         card_button = QPushButton(text, self)
