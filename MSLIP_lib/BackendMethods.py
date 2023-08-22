@@ -10,8 +10,8 @@ from Action import ServerAction
 
 class BackendMethod(ServerAction):
     def __init__(self, ser_name: str = 'Test_1.18',
-                 xmx: str = '4096',
-                 xms: str = '2048',
+                 xmx: str = '2',
+                 xms: str = '1',
                  select_v: str = '1.19',
                  new_name: str = 'default',
                  ):
@@ -30,24 +30,31 @@ class BackendMethod(ServerAction):
         self.xmx = xmx
         self.xms = xms
 
-    def startServer(self) -> None:
+    def startServer(self) -> subprocess.Popen:
         """此函数由启动服务器事件调用"""
-        subprocess.Popen(f'java -{self.xmx} -{self.xms} -jar ../Servers/{self.ser_name}/server.jar',
-                         shell=True)
+        path = os.path.dirname(os.path.realpath(__file__))[:-10] + f'/Servers/{self.ser_name}/server.jar'
+        print(f'cd../Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}')
+        server_process = subprocess.Popen(
+            fr'cd../Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}',
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        with open(fr'../Servers/{self.ser_name}/eula.txt', 'w', encoding='utf-8') as f:
+            f.write("""#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).
+#Tue Aug 22 00:25:11 CST 2023
+eula=true""")
+        print('ok')
+        return server_process
 
     def DownloadJar(self) -> None:
         """此方法由下载事件调用"""
-        with requests.get(url=self.spigot_url, headers=self.requests_head) as get:
-            html = etree.HTML(get.text)
-
+        req = requests.get(url=self.spigot_url, headers=self.requests_head)
+        html = etree.HTML(req.text)
         jar_url = html.xpath('//tr[5]//a[last()]/@href')[0]
-        with requests.get(url=jar_url, headers=self.requests_head, stream=True) as jar_get:
-            if jar_get.status_code == 200:
-                if os.path.isdir(rf'../Servers/{self.new_name}_{self.select_v}') is False:
-                    os.mkdir(rf'../Servers/{self.new_name}_{self.select_v}')
-                with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'wb') as f:
-                    for chunk in jar_get.iter_content(8192):
-                        f.write(chunk)
+        jar_req = requests.get(url=jar_url, headers=self.requests_head)
+        os.mkdir(rf'../Servers/{self.new_name}_{self.select_v}')
+        with open(rf'../Servers/{self.new_name}_{self.select_v}/server.jar', 'wb') as f:
+            f.write(jar_req.content)
 
     def GetJarList(self) -> list:
         """返回可用版本列表"""
@@ -57,3 +64,6 @@ class BackendMethod(ServerAction):
             print(i)
             v_list.append(i.split('_')[-1])
         return v_list
+
+
+back_method = BackendMethod()

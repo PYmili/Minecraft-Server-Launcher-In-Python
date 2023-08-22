@@ -1,4 +1,15 @@
 import sys
+
+from PyQt5.QtCore import (
+    QSize,
+    Qt
+)
+from PyQt5.QtGui import (
+    QFont,
+    QPalette,
+    QBrush,
+    QPixmap
+)
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -12,21 +23,14 @@ from PyQt5.QtWidgets import (
     QDesktopWidget,
     QStackedWidget,
     QGroupBox,
-    QGridLayout
-)
-from PyQt5.QtGui import (
-    QFont,
-    QPalette,
-    QBrush,
-    QPixmap
-)
-from PyQt5.QtCore import (
-    QSize,
-    Qt
+    QGridLayout,
+    QTextEdit
 )
 
+from BackendMethods import back_method
 # 添加服务器界面
 from IncreaseServer import AddButtonWindow
+
 
 class SubWindow(QWidget):
     def __init__(self, content):
@@ -36,6 +40,7 @@ class SubWindow(QWidget):
 
     def initUI(self):
         layout = QVBoxLayout()
+
         label = QLabel(self.content)
         layout.addWidget(label)
         self.setLayout(layout)
@@ -45,10 +50,25 @@ class StartWindow(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.add_button_window = None
+        self.terminal_window = QTextEdit()
         self.StartButton = QPushButton("启动", self)
+        self.StartButton.clicked.connect(self.start_server)
         self.AddButton = QPushButton("添加", self)
         self.gridLayout = QGridLayout()  # 使用 QGridLayout 作为网格布局
+        self.gridLayout.addWidget(self.terminal_window, 0, 0)
         self.initUI()
+
+    def start_server(self):
+        """启动服务器"""
+        back_method.startServer()
+        self.loop_out()
+
+    def loop_out(self):
+        """循环输出终端"""
+        server_process = back_method.startServer()
+        for out_log in iter(server_process.stdout.readline, b''):
+            self.terminal_window.setText(out_log.decode('gbk'))
+        server_process.stdout.close()
 
     def initUI(self):
         main_layout = QVBoxLayout()
@@ -113,6 +133,7 @@ class MainWindow(QMainWindow):
         self.center_window()
 
         # 设置整个窗口的样式表
+
         # self.setStyleSheet("background-color: rgb(30, 30, 30); color: white;")
 
         # 创建左侧菜单
@@ -164,7 +185,7 @@ class MainWindow(QMainWindow):
         item.setSizeHint(QSize(item.sizeHint().width(), 50))  # 调整按钮高度
 
         # 使用临时变量来传递 sub_windows
-        button.clicked.connect(lambda :self.Button_sub_window(index))
+        button.clicked.connect(lambda: self.Button_sub_window(index))
 
     def Button_sub_window(self, index):
         if index != self.current_sub_window_index:
