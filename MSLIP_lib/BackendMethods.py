@@ -57,9 +57,9 @@ class BackendMethod(ServerAction):
         v_list = []
         server_list = os.listdir(r'../Servers')
         for i in server_list:
-            print(i)
             v_list.append(i.split('_')[-1])
         return v_list
 
 
-back_method = BackendMethod()
+# b = BackendMethod()
+# b.DownloadJar()
