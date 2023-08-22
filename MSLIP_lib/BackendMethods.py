@@ -39,10 +39,6 @@ class BackendMethod(ServerAction):
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
-        with open(fr'../Servers/{self.ser_name}/eula.txt', 'w', encoding='utf-8') as f:
-            f.write("""#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).
-#Tue Aug 22 00:25:11 CST 2023
-eula=true""")
         print('ok')
         return server_process
 

@@ -59,16 +59,9 @@ class StartWindow(QWidget):
         self.initUI()
 
     def start_server(self):
-        """启动服务器"""
-        back_method.startServer()
-        self.loop_out()
-
-    def loop_out(self):
-        """循环输出终端"""
         server_process = back_method.startServer()
         for out_log in iter(server_process.stdout.readline, b''):
             self.terminal_window.setText(out_log.decode('gbk'))
-        server_process.stdout.close()
 
     def initUI(self):
         main_layout = QVBoxLayout()
