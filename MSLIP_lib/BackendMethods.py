@@ -44,8 +44,8 @@ class BackendMethod(ServerAction):
     def auto_change(self):
         with open(fr'./Servers/{self.ser_name}/eula.txt', 'w', encoding='utf-8') as f:
             f.write("""#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).
-        #Tue Aug 22 00:25:11 CST 2023
-        eula=true""")
+#Tue Aug 22 00:25:11 CST 2023
+eula=true""")
 
     def DownloadJar(self) -> None:
         """此方法由下载事件调用"""
