@@ -19,6 +19,7 @@ from PyQt5.QtGui import (
 from PyQt5.QtCore import QSize
 
 from .StartWindow import StartWindow
+from .TerminalWindow import TerminalWindow
 
 
 class SubWindow(QWidget):
@@ -60,7 +61,7 @@ class MainWindow(QMainWindow):
         # 创建右侧子窗口
         self.stacked_widget = QStackedWidget()
         self.stacked_widget.addWidget(StartWindow())
-        self.stacked_widget.addWidget(SubWindow("打开服务器终端"))
+        self.stacked_widget.addWidget(TerminalWindow())
         self.stacked_widget.addWidget(SubWindow("下载资源"))
         self.stacked_widget.addWidget(SubWindow("管理Mods"))
 

@@ -61,7 +61,8 @@ eula=true""")
         result = []
         for paths, dirs, files in os.walk('.\\Servers'):
             for file in files:
-                result.append(os.path.join(paths, file))
+                if os.path.splitext(file)[-1] == ".jar":
+                    result.append(os.path.join(paths, file))
 
         return result
 
