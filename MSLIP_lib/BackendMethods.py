@@ -59,7 +59,7 @@ eula=true""")
     def GetJarList(self) -> list:
         """返回可用版本列表"""
         result = []
-        for paths, dirs, files in os.walk(r'../Servers')
+        for paths, dirs, files in os.walk(r'../Servers'):
             for file in files:
                 result.append(os.path.join(paths, file))
 
