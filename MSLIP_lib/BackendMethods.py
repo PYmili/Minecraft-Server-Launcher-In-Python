@@ -5,6 +5,8 @@ import requests
 from fake_user_agent import user_agent
 from lxml import etree
 
+from PyQt5.QtCore import QProcess
+
 from .Action import ServerAction
 
 
@@ -33,9 +35,9 @@ class BackendMethod(ServerAction):
     def startServer(self) -> subprocess.Popen:
         """此函数由启动服务器事件调用"""
         path = os.path.dirname(os.path.realpath(__file__))[:-10] + f'/Servers/{self.ser_name}/server.jar'
-        print(f'cd./Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}')
+        print(f'cd ./Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}')
         server_process = subprocess.Popen(
-            fr'cd./Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}',
+            fr'cd ./Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}',
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
