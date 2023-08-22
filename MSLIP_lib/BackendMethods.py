@@ -63,7 +63,6 @@ eula=true""")
         for paths, dirs, files in os.walk('.\\Servers'):
             for file in files:
                 if os.path.splitext(file)[-1] == ".jar":
-                    print(os.path.join(paths, file))
                     result.append(os.path.join(paths, file))
 
         return result
