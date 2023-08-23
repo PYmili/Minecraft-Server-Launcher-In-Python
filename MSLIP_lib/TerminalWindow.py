@@ -197,9 +197,6 @@ class ServerSelectionWindow(QDialog):
     def __init__(self):
         super().__init__()
 
-        # 用于判断程序是否成功写入ServerToRun.json
-        self.IfWrite = False
-
         self.setWindowTitle("服务器选择")
         self.setGeometry(100, 100, 300, 150)
         frame_geometry = self.frameGeometry()

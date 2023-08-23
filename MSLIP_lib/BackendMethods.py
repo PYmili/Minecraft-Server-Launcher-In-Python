@@ -51,10 +51,9 @@ eula=true""")
     def GetJarList(self) -> list:
         """返回可用版本列表"""
         result = []
-        for paths, dirs, files in os.walk(r'.\DownLoads\Jar'):
+        for paths, dirs, files in os.walk(r'.\Servers\DownLoads\Jar'):
             for file in files:
                 if os.path.splitext(file)[-1] == ".jar":
                     result.append(os.path.join(paths, file))
-                print(result)
 
         return result

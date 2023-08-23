@@ -1,8 +1,3 @@
 {
-    "ServerName": "Test2",
-    "java": "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath\\java.exe",
-    "framework": ".\\Servers\\Test2\\server.jar",
-    "xmx": "1024M",
-    "xms": "1024M",
-    "CreationTime": "2023-08-23 14:29:38.600243"
+
 }
