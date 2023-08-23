@@ -1,3 +1,10 @@
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import (
+    QFont,
+    QPalette,
+    QBrush,
+    QPixmap
+)
 from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -10,20 +17,15 @@ from PyQt5.QtWidgets import (
     QDesktopWidget,
     QStackedWidget,
 )
-from PyQt5.QtGui import (
-    QFont,
-    QPalette,
-    QBrush,
-    QPixmap
-)
-from PyQt5.QtCore import QSize
 
 from .CreateWindow import CreateWindow
+from .Jar_DownLoad import JarDownLoad
 from .TerminalWindow import TerminalWindow
 
 
 class SubWindow(QWidget):
     """切换界面测试"""
+
     def __init__(self, content):
         super().__init__()
         self.content = content
@@ -38,6 +40,7 @@ class SubWindow(QWidget):
 
 class MainWindow(QMainWindow):
     """主界面"""
+
     def __init__(self):
         super().__init__()
 
@@ -61,12 +64,14 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.Create = CreateWindow()
         self.Terminal = TerminalWindow()
+        self.Jar_ = JarDownLoad()
+
         self.stacked_widget.addWidget(self.Create)
         self.stacked_widget.addWidget(self.Terminal)
-        self.stacked_widget.addWidget(SubWindow("下载资源"))
+        self.stacked_widget.addWidget(self.Jar_)
         self.stacked_widget.addWidget(SubWindow("管理Mods"))
 
-        self.current_sub_window_index = 0   # 记录当前界面是哪一个
+        self.current_sub_window_index = 0  # 记录当前界面是哪一个
         self.menu_list.itemClicked.connect(self.change_sub_window)
 
         # 布局
@@ -97,7 +102,7 @@ class MainWindow(QMainWindow):
         item.setSizeHint(QSize(item.sizeHint().width(), 50))  # 调整按钮高度
 
         # 使用临时变量来传递 sub_windows
-        button.clicked.connect(lambda :self.Button_sub_window(index))
+        button.clicked.connect(lambda: self.Button_sub_window(index))
 
     # 点击QListWidget中的按钮，切换QStackedWidget窗口
     def Button_sub_window(self, index):
