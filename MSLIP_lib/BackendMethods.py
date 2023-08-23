@@ -35,8 +35,8 @@ eula=true""")
         html = etree.HTML(req.text)
         jar_url = html.xpath('//a[text()="服务端"]/@href')[0]
         jar_req = requests.get(url=jar_url, headers=self.requests_head)
-        os.mkdir(rf'.\DownLoads\jar\official_hub\{self.select_v}')
-        with open(rf'.\DownLoads\jar\official_hub\{self.select_v}\server_official.jar', 'wb') as f:
+        os.mkdir(rf'.\DownLoads\Jar\official_hub\{self.select_v}')
+        with open(rf'.\DownLoads\Jar\official_hub\{self.select_v}\server_official.jar', 'wb') as f:
             f.write(jar_req.content)
 
     def DownloadJar_spigot(self) -> None:
@@ -44,16 +44,17 @@ eula=true""")
         print('DownloadJar_spigot')
         print(self.select_v)
         jar_req = requests.get(url=self.spigot_url, headers=self.requests_head)
-        os.mkdir(rf'.\DownLoads\jar\spigot_hub\{self.select_v}')
-        with open(rf'.\DownLoads\jar\spigot_hub\{self.select_v}\server_spigot.jar', 'wb') as f:
+        os.mkdir(rf'.\DownLoads\Jar\spigot_hub\{self.select_v}')
+        with open(rf'.\DownLoads\Jar\spigot_hub\{self.select_v}\server_spigot.jar', 'wb') as f:
             f.write(jar_req.content)
 
     def GetJarList(self) -> list:
         """返回可用版本列表"""
         result = []
-        for paths, dirs, files in os.walk(r'.\Servers\DownLoads\Jar'):
+        for paths, dirs, files in os.walk(r'.\DownLoads\Jar'):
             for file in files:
                 if os.path.splitext(file)[-1] == ".jar":
                     result.append(os.path.join(paths, file))
+                print(result)
 
         return result
