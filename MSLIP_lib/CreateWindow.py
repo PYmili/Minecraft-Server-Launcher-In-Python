@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QGridLayout,
     QGroupBox,
+    QDialog,
 )
 
 from PyQt5.QtGui import QFont
@@ -15,14 +16,17 @@ from PyQt5.QtCore import Qt
 
 # 添加服务器界面
 from .IncreaseServer import AddButtonWindow
+from .DeleteServerWindow import DeleteServerWindow
 
 
 class CreateWindow(QWidget):
     """创建服务器界面"""
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.add_button_window = None
         self.AddButton = QPushButton("添加", self)
+        self.DeleteServerButton = QPushButton("删除", self)
         self.gridLayout = QGridLayout()  # 使用 QGridLayout 作为网格布局
         self.initUI()
 
@@ -39,11 +43,22 @@ class CreateWindow(QWidget):
         self.AddButton.setCursor(Qt.PointingHandCursor)
         self.AddButton.clicked.connect(self.addButtonShow)  # 连接添加按钮的点击事件
 
+        # 删除服务器
+        self.DeleteServerButton.setFont(QFont("Arial", 14, QFont.Bold))
+        self.DeleteServerButton.setStyleSheet(
+            "QPushButton { background-color: red; color: white; border: none; padding: 10px 20px; }"
+            "QPushButton:hover { background-color: darkred; }"
+            "QPushButton:pressed { background-color: lightred; }"
+        )
+        self.DeleteServerButton.setCursor(Qt.PointingHandCursor)
+        self.DeleteServerButton.clicked.connect(self.ShowDeleteServerWindow)
+
         # 创建一个 QGroupBox 来包含按钮布局
         button_group = QGroupBox()
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         button_layout.addWidget(self.AddButton, alignment=Qt.AlignRight | Qt.AlignBottom)
+        button_layout.addWidget(self.DeleteServerButton, alignment=Qt.AlignRight | Qt.AlignBottom)
         button_group.setLayout(button_layout)
         button_group.setStyleSheet("QGroupBox { border: none; }")
 
@@ -59,11 +74,25 @@ class CreateWindow(QWidget):
 
     # 显示添加服务器配置界面
     def addButtonShow(self) -> None:
-        self.add_button_window = AddButtonWindow(self.UpdateCard)
-        self.add_button_window.show()
+        self.add_button_window = AddButtonWindow()
+        result = self.add_button_window.exec_()
+        if result == QDialog.Accepted:
+            self.UpdateCard()
+
+    def ShowDeleteServerWindow(self) -> None:
+        self.DeleteServer = DeleteServerWindow()
+        result = self.DeleteServer.exec_()
+        if result == QDialog.Accepted:
+            self.UpdateCard()
 
     # 更新卡片
     def UpdateCard(self) -> None:
+        while self.gridLayout.count():
+            item = self.gridLayout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+
         with open("./Servers/Servers.json", "r", encoding="utf-8") as rfp:
             ServerData = json.loads(rfp.read())
 
@@ -92,3 +121,5 @@ class CreateWindow(QWidget):
         )
 
         self.gridLayout.addWidget(card_button)  # 在网格中添加卡片按钮
+
+

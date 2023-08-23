@@ -5,7 +5,7 @@ import subprocess
 from datetime import datetime
 
 from PyQt5.QtWidgets import (
-    QWidget,
+    QDialog,
     QVBoxLayout,
     QHBoxLayout,
     QGroupBox,
@@ -26,14 +26,10 @@ from PyQt5.QtCore import (
 from .BackendMethods import BackendMethod
 
 
-class AddButtonWindow(QWidget):
+class AddButtonWindow(QDialog):
     """添加服务器配置界面"""
-    def __init__(self, UpdateCardFun: object):
-        """
-        :param UpdateCardFun: 用于添加成功后更新CreateWindow中的卡片
-        """
+    def __init__(self):
         super().__init__()
-        self.UpdataCardFun = UpdateCardFun
 
         self.setWindowTitle("SetingSevers")  # 设置窗口标题
         self.setGeometry(0, 0, 480, 270)
@@ -200,7 +196,7 @@ class AddButtonWindow(QWidget):
         )
         if result == "创建成功！":
             # 更新卡片，关闭窗口
-            self.UpdataCardFun()
+            self.accept()
             self.close()
 
 
