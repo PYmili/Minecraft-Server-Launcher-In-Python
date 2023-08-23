@@ -9,7 +9,7 @@ from MSLIP_lib import MainWindow
 
 
 if __name__ == '__main__':
-    logger.add(r"./log/latest.log")
+    logger.add(r"./log/latest.log", rotation="10kb")
     app = QApplication(sys.argv)
     logger.info("正常启动程序")
     window = MainWindow.MainWindow()
