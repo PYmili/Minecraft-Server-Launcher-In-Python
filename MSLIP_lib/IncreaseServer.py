@@ -22,6 +22,7 @@ from PyQt5.QtCore import (
     QThread,
     pyqtSignal
 )
+from loguru import logger
 
 from .BackendMethods import BackendMethod
 
@@ -30,6 +31,8 @@ class AddButtonWindow(QDialog):
     """添加服务器配置界面"""
     def __init__(self):
         super().__init__()
+
+        logger.info("启动添加服务器配置界面")
 
         self.setWindowTitle("SetingSevers")  # 设置窗口标题
         self.setGeometry(0, 0, 480, 270)
@@ -146,6 +149,7 @@ class AddButtonWindow(QDialog):
 
     # 选择java的事件
     def onSelectFileClicked(self):
+        logger.info("打开选择java文件")
         file_dialog = QFileDialog(self)
         file_path, _ = file_dialog.getOpenFileName(self, "选择文件", "", "All Files (*)")
         if file_path:
@@ -153,6 +157,7 @@ class AddButtonWindow(QDialog):
 
     # 自动选择java
     def AutoSearchJavaThreadEvent(self, result: str = False):
+        logger.info(f"自动选择java：{result}")
         if result:
             self.JavaPathInputBox.setText(result)
         else:
@@ -161,6 +166,7 @@ class AddButtonWindow(QDialog):
 
     # 点击确认，创建服务器事件
     def onConfirmClicked(self):
+        logger.info("点击确认，创建服务器事件")
         # 用于存放新服务器的参数
         new_server_data = {
             "ServerName": str(self.setServerName.text()),
@@ -178,6 +184,7 @@ class AddButtonWindow(QDialog):
             errorMsg = "未设置名字！"
 
         if errorMsg:
+            logger.error(errorMsg)
             QMessageBox.warning(
                 self, "错误", errorMsg,
                 QMessageBox.Yes
@@ -222,6 +229,7 @@ class NewServerThread(QThread):
         :param NewServerData: dict数据，存放新服务器的参数
         """
         super(NewServerThread, self).__init__(parent=None)
+        logger.info("启动创建新服务器线程")
         self.NewServerData = NewServerData
 
     def run(self):
@@ -236,7 +244,9 @@ class NewServerThread(QThread):
                 self.result_ready.emit("服务器文件夹已存在！")
                 return
             # 在Servers文件夹中创建服务器名字的文件夹
+            logger.info("在Servers文件夹中创建服务器名字的文件夹")
             os.mkdir(f"./Servers/{self.NewServerData['ServerName']}")
+            logger.info("创建成功")
             if os.path.isfile(self.NewServerData['framework']) is False:
                 self.result_ready.emit(f"“{self.NewServerData['framework']}”文件不存在！")
 
@@ -245,6 +255,7 @@ class NewServerThread(QThread):
                 self.NewServerData['framework'],
                 f"./Servers/{self.NewServerData['ServerName']}"
             )
+            logger.info("成功复制用户指定的服务器内核至服务器名字的文件夹")
 
             # 更新服务器内核的位置
             self.NewServerData[
@@ -260,5 +271,7 @@ class NewServerThread(QThread):
                 wfp.write(json.dumps(ServersRead, indent=4))
 
             self.result_ready.emit("创建成功！")
+            logger.info("创建成功！")
         except Exception as e:
             self.result_ready.emit(f"创建失败！", e)
+            logger.error("创建失败！"+e)
