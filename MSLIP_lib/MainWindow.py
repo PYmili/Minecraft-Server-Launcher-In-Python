@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QLabel,
     QDesktopWidget,
-    QStackedWidget,
+    QStackedWidget, QSizePolicy,
 )
 
 from .CreateWindow import CreateWindow
@@ -45,13 +45,15 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Minecraft 服务器启动器")
-        self.setGeometry(100, 100, 960, 540)
+        self.setGeometry(100, 100, 1200, 800)
+        self.setMinimumSize(900, 600)
 
         # 居中窗口
         self.center_window()
 
         # 创建左侧菜单
         self.menu_list = QListWidget()
+        self.menu_list.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.menu_list.setStyleSheet("border: none; background-color: rgb(50, 50, 50); color: white;")
 
         # 添加左侧菜单按钮

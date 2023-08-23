@@ -1,5 +1,5 @@
 import requests
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, Qt
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QScrollArea,
-    QSizePolicy,
+    QSizePolicy
 )
 from fake_user_agent import user_agent
 from lxml import etree
@@ -36,6 +36,7 @@ class VersionListThread(QThread):
 
 class DownloadOfficial(QThread):
     """官方server下载线程"""
+
     def __init__(self, download_btn: QPushButton):
         super().__init__()
         self.download_btn = download_btn
@@ -58,6 +59,8 @@ class DownloadSpigot(QThread):
 
 
 class JarDownLoad(QWidget):
+    """窗体，线程调用，功能类"""
+
     def __init__(self):
         super().__init__()
         self.load_list_thread = VersionListThread()
@@ -65,7 +68,7 @@ class JarDownLoad(QWidget):
 
         self.scroll_area = QScrollArea(self)
         self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setFixedSize(self.width(), self.height())
+        self.scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.group_official = QGroupBox('官方版本', self)
         self.group_official.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -83,12 +86,18 @@ class JarDownLoad(QWidget):
         self.group_spigot.setLayout(self.spigot_lay)
 
         self.jar_window = QHBoxLayout(self)
+        self.jar_window.setAlignment(Qt.AlignTop)
         self.jar_window.addWidget(self.group_official)
         self.jar_window.addWidget(self.group_spigot)
 
         widget = QWidget(self)
         widget.setLayout(self.jar_window)
         self.scroll_area.setWidget(widget)
+
+    def resizeEvent(self, event):
+        width = event.size().width()
+        height = event.size().height()
+        self.scroll_area.setFixedSize(int(width), int(height * 0.8))
 
     def official_list(self, layout: QVBoxLayout):
         """官方server下载列表"""
