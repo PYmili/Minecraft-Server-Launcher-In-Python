@@ -29,7 +29,6 @@ class VersionListThread(QThread):
         html = etree.HTML(req.text)
         self.version_list = html.xpath('//div[@class="download-pane"]/div//div[1]/h2/text()')
         self.version_lists = self.version_list
-        print(self.version_lists)
 
     def return_list(self):
         return self.version_lists
@@ -94,7 +93,6 @@ class JarDownLoad(QWidget):
     def official_list(self, layout: QVBoxLayout):
         """官方server下载列表"""
         self.version_list = self.load_list_thread.return_list()
-        print(self.version_list)
         for version in self.version_list:
             self.load_official(version=version, layout=layout)
 
