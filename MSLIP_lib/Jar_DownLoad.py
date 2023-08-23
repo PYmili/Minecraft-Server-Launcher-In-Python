@@ -37,7 +37,6 @@ class VersionListThread(QThread):
 
 class DownloadOfficial(QThread):
     """官方server下载线程"""
-
     def __init__(self, download_btn: QPushButton):
         super().__init__()
         self.download_btn = download_btn
