@@ -97,7 +97,6 @@ class JarDownLoad(QWidget):
         self.main_window = QVBoxLayout()
         self.main_window.setAlignment(Qt.AlignTop | Qt.AlignCenter)
         self.main_window.addWidget(self.scroll_area)
-
         self.setLayout(self.main_window)
 
     def official_list(self, layout: QVBoxLayout):

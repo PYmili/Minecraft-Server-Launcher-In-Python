@@ -47,7 +47,8 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Minecraft 服务器启动器")
-        self.setGeometry(100, 100, 960, 540)
+        self.resize(1200, 800)
+        self.setMinimumSize(900, 600)
 
         # 居中窗口
         self.center_window()
