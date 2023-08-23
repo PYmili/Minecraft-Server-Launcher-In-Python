@@ -1,3 +1,10 @@
+from PyQt5.QtCore import QSize
+from PyQt5.QtGui import (
+    QFont,
+    QPalette,
+    QBrush,
+    QPixmap
+)
 from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -10,17 +17,10 @@ from PyQt5.QtWidgets import (
     QDesktopWidget,
     QStackedWidget,
 )
-from PyQt5.QtGui import (
-    QFont,
-    QPalette,
-    QBrush,
-    QPixmap
-)
-from PyQt5.QtCore import QSize
-
 from loguru import logger
 
 from .CreateWindow import CreateWindow
+from .Jar_DownLoad import JarDownLoad
 from .TerminalWindow import TerminalWindow
 
 
@@ -64,6 +64,8 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.Create = CreateWindow()
         self.Terminal = TerminalWindow()
+        self.Jar_ = JarDownLoad()
+        self.stacked_widget.addWidget(self.Jar_)
         self.stacked_widget.addWidget(self.Create)
         self.stacked_widget.addWidget(self.Terminal)
         self.stacked_widget.addWidget(SubWindow("下载资源"))
