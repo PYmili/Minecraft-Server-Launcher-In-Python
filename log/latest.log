@@ -21,3 +21,17 @@
 2023-08-23 20:30:57.225 | INFO     | MSLIP_lib.MainWindow:updateBackgroundImage:137 - 更新背景图片
 2023-08-23 20:30:58.655 | INFO     | MSLIP_lib.MainWindow:Button_sub_window:114 - QStackedWidget窗口为：2
 2023-08-23 20:31:08.315 | INFO     | MSLIP_lib.MainWindow:closeEvent:152 - 程序结束
+2023-08-23 20:33:43.645 | INFO     | __main__:<module>:14 - 正常启动程序
+2023-08-23 20:33:43.649 | INFO     | MSLIP_lib.MainWindow:center_window:129 - 居中窗口
+2023-08-23 20:33:43.649 | INFO     | MSLIP_lib.MainWindow:add_menu_item:97 - 添加左侧菜单按钮
+2023-08-23 20:33:43.917 | INFO     | MSLIP_lib.MainWindow:add_menu_item:97 - 添加左侧菜单按钮
+2023-08-23 20:33:43.925 | INFO     | MSLIP_lib.MainWindow:add_menu_item:97 - 添加左侧菜单按钮
+2023-08-23 20:33:43.926 | INFO     | MSLIP_lib.MainWindow:add_menu_item:97 - 添加左侧菜单按钮
+2023-08-23 20:33:43.926 | INFO     | MSLIP_lib.CreateWindow:__init__:33 - 创建服务器界面
+2023-08-23 20:33:43.926 | INFO     | MSLIP_lib.TerminalWindow:__init__:98 - 启动和终端界面
+2023-08-23 20:33:43.935 | INFO     | MSLIP_lib.MainWindow:__init__:34 - 切换界面测试
+2023-08-23 20:33:43.965 | INFO     | MSLIP_lib.MainWindow:__init__:94 - 启动程序主界面
+2023-08-23 20:33:44.013 | INFO     | MSLIP_lib.MainWindow:updateBackgroundImage:137 - 更新背景图片
+2023-08-23 20:33:44.805 | INFO     | MSLIP_lib.MainWindow:Button_sub_window:114 - QStackedWidget窗口为：3
+2023-08-23 20:33:45.295 | INFO     | MSLIP_lib.MainWindow:Button_sub_window:114 - QStackedWidget窗口为：2
+2023-08-23 20:33:46.275 | INFO     | MSLIP_lib.MainWindow:closeEvent:152 - 程序结束
