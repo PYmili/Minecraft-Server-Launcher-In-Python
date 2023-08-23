@@ -100,11 +100,6 @@ class JarDownLoad(QWidget):
 
         self.setLayout(self.main_window)
 
-    def resizeEvent(self, event):
-        width = event.size().width()
-        height = event.size().height()
-        self.scroll_area.setFixedSize(int(width), int(height))
-
     def official_list(self, layout: QVBoxLayout):
         """官方server下载列表"""
         self.version_list = self.load_list_thread.return_list()

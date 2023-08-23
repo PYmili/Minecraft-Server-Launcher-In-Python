@@ -65,6 +65,7 @@ class MainWindow(QMainWindow):
         self.Create = CreateWindow()
         self.Terminal = TerminalWindow()
         self.Jar_ = JarDownLoad()
+
         self.stacked_widget.addWidget(self.Jar_)
         self.stacked_widget.addWidget(self.Create)
         self.stacked_widget.addWidget(self.Terminal)
