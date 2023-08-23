@@ -20,6 +20,8 @@ from PyQt5.QtCore import (
     pyqtSignal
 )
 
+from loguru import logger
+
 
 class StartJavaServerProcess(QProcess):
     """使用QProcess启动Java版服务器，有输入命令，输出游戏log功能"""
@@ -32,7 +34,7 @@ class StartJavaServerProcess(QProcess):
         :param server_args: 启动参数
         """
         super().__init__()
-        print("启动StartJavaServerProcess")
+        logger.info("启动StartJavaServerProcess")
         self.setProcessChannelMode(QProcess.MergedChannels)
         self.readyReadStandardOutput.connect(self.readOutput)
         self.setWorkingDirectory(os.path.dirname(server_path))  # 设置工作目录为服务器文件所在目录
@@ -41,10 +43,12 @@ class StartJavaServerProcess(QProcess):
     # 读取游戏log输出
     def readOutput(self):
         output = self.readAllStandardOutput().data().decode("utf-8")
+        logger.info(output)
         self.output_ready.emit(output)
 
     # 发送命令
     def writeCommand(self, command):
+        logger.info(f"发送命令:{command}".encode("utf-8"))
         self.write(f"{command}\n".encode("utf-8"))
 
 
@@ -65,7 +69,7 @@ class TerminalThread(QThread):
         ]
 
     def run(self):
-        print("启动TerminalThread")
+        logger.info("启动TerminalThread")
         self.process = StartJavaServerProcess(
             self.java_path,
             self.server_path,
@@ -91,7 +95,7 @@ class TerminalWindow(QWidget):
     """启动和终端界面"""
     def __init__(self):
         super().__init__(parent=None)
-
+        logger.info("启动和终端界面")
         main_layout = QHBoxLayout()
 
         # 左侧布局
@@ -170,6 +174,7 @@ class TerminalWindow(QWidget):
 
     # 打开服务器选择的界面
     def onStartButton(self):
+        logger.info("打开服务器选择界面")
         self.serverSelection = ServerSelectionWindow()
         result = self.serverSelection.exec_()  # 显示模态对话框，阻塞主界面
         if result == QDialog.Accepted:
@@ -180,6 +185,7 @@ class TerminalWindow(QWidget):
 
     # 更新QlineEdit中的log输出
     def updateTerminalOutput(self, output):
+        logger.info("更新QlineEdit中的log输出")
         self.terminal_output.moveCursor(QTextCursor.End)
         self.terminal_output.insertPlainText(output)
 
@@ -196,6 +202,8 @@ class ServerSelectionWindow(QDialog):
     """服务器选择界面"""
     def __init__(self):
         super().__init__()
+
+        logger.info("已打开服务器选择界面")
 
         self.setWindowTitle("服务器选择")
         self.setGeometry(100, 100, 300, 150)
@@ -233,6 +241,7 @@ class ServerSelectionWindow(QDialog):
         return result
 
     def confirmSelection(self):
+        logger.info("确认要启动服务器")
         selected_server = self.server_combo_box.currentText()
         with open("./Servers/ServerToRun.json", "w+", encoding="utf-8") as wfp:
             wfp.write(json.dumps(self.getServerList()[selected_server], indent=4))

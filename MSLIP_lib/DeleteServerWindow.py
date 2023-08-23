@@ -16,6 +16,8 @@ from PyQt5.QtCore import (
     pyqtSignal,
 )
 
+from loguru import logger
+
 
 class DeleteServerWindow(QDialog):
     """删除服务器界面"""
@@ -23,8 +25,7 @@ class DeleteServerWindow(QDialog):
     def __init__(self):
         super(DeleteServerWindow, self).__init__(parent=None)
 
-        # 用于判断程序是否成功写入ServerToRun.json
-        self.IfWrite = False
+        logger.info("删除服务器选择界面")
 
         self.setWindowTitle("服务器选择")
         self.setGeometry(100, 100, 300, 150)
@@ -62,6 +63,7 @@ class DeleteServerWindow(QDialog):
         return result
 
     def DeleteServers(self):
+        logger.info("确认删除服务器")
         key = self.server_combo_box.currentText()
         if key:
             self.__DeleteServerThread = DeleteServerThread(key)
@@ -69,6 +71,7 @@ class DeleteServerWindow(QDialog):
             self.__DeleteServerThread.start()
 
     def AcceptDeleteServerThread(self, result):
+        logger.info(f"DeleteServerThread返回结果：{result}")
         QMessageBox.information(
             self, "结果", result,
             QMessageBox.Yes
@@ -84,6 +87,7 @@ class DeleteServerThread(QThread):
 
     def __init__(self, ServerName):
         super(DeleteServerThread, self).__init__(parent=None)
+        logger.info("启动删除服务器线程")
         self.ServerName = ServerName
 
     def run(self):

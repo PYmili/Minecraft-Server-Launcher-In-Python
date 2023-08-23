@@ -13,6 +13,7 @@ from PyQt5.QtWidgets import (
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
+from loguru import logger
 
 # 添加服务器界面
 from .IncreaseServer import AddButtonWindow
@@ -29,6 +30,7 @@ class CreateWindow(QWidget):
         self.DeleteServerButton = QPushButton("删除", self)
         self.gridLayout = QGridLayout()  # 使用 QGridLayout 作为网格布局
         self.initUI()
+        logger.info("创建服务器界面")
 
     def initUI(self):
         main_layout = QVBoxLayout()
@@ -74,6 +76,7 @@ class CreateWindow(QWidget):
 
     # 显示添加服务器配置界面
     def addButtonShow(self) -> None:
+        logger.info("显示添加服务器配置界面")
         self.add_button_window = AddButtonWindow()
         result = self.add_button_window.exec_()
         if result == QDialog.Accepted:

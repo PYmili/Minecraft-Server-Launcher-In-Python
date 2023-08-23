@@ -18,6 +18,8 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtCore import QSize
 
+from loguru import logger
+
 from .CreateWindow import CreateWindow
 from .TerminalWindow import TerminalWindow
 
@@ -28,6 +30,7 @@ class SubWindow(QWidget):
         super().__init__()
         self.content = content
         self.initUI()
+        logger.info("切换界面测试")
 
     def initUI(self):
         layout = QVBoxLayout()
@@ -83,8 +86,10 @@ class MainWindow(QMainWindow):
             "QListWidget::item { padding: 15px; }"
             "QListWidget::item:selected { background-color: rgb(80, 80, 80); color: white; }"  # 选中效果
         )
+        logger.info("启动程序主界面")
 
     def add_menu_item(self, text, index):
+        logger.info("添加左侧菜单按钮")
         button = QPushButton(text)
         button.setFont(QFont("Arial", 12, QFont.Bold))  # 设置按钮字体样式
         button.setStyleSheet(
@@ -101,6 +106,7 @@ class MainWindow(QMainWindow):
 
     # 点击QListWidget中的按钮，切换QStackedWidget窗口
     def Button_sub_window(self, index):
+        logger.info(f"QStackedWidget窗口为：{index}")
         if index != self.current_sub_window_index:
             self.stacked_widget.setCurrentIndex(index)
             self.current_sub_window_index = index
@@ -108,12 +114,14 @@ class MainWindow(QMainWindow):
     # 点击QListWidget，切换QStackedWidget中的窗口
     def change_sub_window(self, item):
         selected_index = self.menu_list.row(item)
+        logger.info(f"QStackedWidget中的窗口为：{selected_index}")
         if selected_index != self.current_sub_window_index:
             self.stacked_widget.setCurrentIndex(selected_index)
             self.current_sub_window_index = selected_index
 
     # 居中窗口方法
     def center_window(self):
+        logger.info("居中窗口")
         frame_geometry = self.frameGeometry()
         screen_center = QDesktopWidget().availableGeometry().center()
         frame_geometry.moveCenter(screen_center)
@@ -121,6 +129,7 @@ class MainWindow(QMainWindow):
 
     # 更新 背景图片 的方法
     def updateBackgroundImage(self, img_path):
+        logger.info("更新背景图片")
         palette = QPalette()
         pix = QPixmap(img_path)
         pix = pix.scaled(self.width(), self.height())
@@ -133,3 +142,7 @@ class MainWindow(QMainWindow):
 
         # 在窗口大小变化时更新背景图片
         self.updateBackgroundImage("./resources/images/bg_0.png")
+
+    def closeEvent(self, event):
+        logger.info("程序结束")
+        event.accept()
