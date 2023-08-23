@@ -1,5 +1,5 @@
 import requests
-from PyQt5.QtCore import QThread, Qt
+from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -19,18 +19,27 @@ class VersionListThread(QThread):
 
     def __init__(self):
         super().__init__()
-        self.version_lists = []
+        self.server_version_lists = []
+        self.forge_version_list = []
         self.hand = {'User-Agent': user_agent()}
         self.server_list_url = 'https://getbukkit.org/download/spigot'
+        self.forge_list_url = 'https://files.minecraftforge.net/net/minecraftforge/forge'
 
     def run(self):
         req = requests.get(url=self.server_list_url, headers=self.hand)
         html = etree.HTML(req.text)
-        self.version_list = html.xpath('//div[@class="download-pane"]/div//div[1]/h2/text()')
-        self.version_lists = self.version_list
+        version_list = html.xpath('//div[@class="download-pane"]/div//div[1]/h2/text()')
+        self.server_version_lists = version_list
+        self.run_()
+
+    def run_(self):
+        req = requests.get(url=self.forge_list_url, headers=self.hand)
+        html = etree.HTML(req.text)
+        version_list = html.xpath('//li[@class="li-version-list"]/ul//li//text()')
+        self.forge_version_list = [i.strip() for i in version_list if i.strip() != '']
 
     def return_list(self):
-        return self.version_lists
+        return self.server_version_lists, self.forge_version_list
 
 
 class DownloadOfficial(QThread):
@@ -42,7 +51,7 @@ class DownloadOfficial(QThread):
 
     def run(self) -> None:
         back_method = BackendMethod(select_v=self.download_btn.text())
-        back_method.DownloadJar_official()
+        back_method.Download_official()
 
 
 class DownloadSpigot(QThread):
@@ -54,7 +63,19 @@ class DownloadSpigot(QThread):
 
     def run(self) -> None:
         back_method = BackendMethod(select_v=self.download_btn.text())
-        back_method.DownloadJar_spigot()
+        back_method.Download_spigot()
+
+
+class DownloadForge(QThread):
+    """spigot server下载线程"""
+
+    def __init__(self, download_btn: QPushButton):
+        super().__init__()
+        self.download_btn = download_btn
+
+    def run(self) -> None:
+        back_method = BackendMethod(select_v=self.download_btn.text())
+        back_method.Download_forge()
 
 
 class DownloadWindow(QWidget):
@@ -62,6 +83,11 @@ class DownloadWindow(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.load_list_thread = VersionListThread()
+        self.load_list_thread.start()
+        self.load_list_thread.finished.connect(self.add_official_to_list)
+        self.load_list_thread.finished.connect(self.add_spigot_to_list)
+        self.load_list_thread.finished.connect(self.add_forge_to_list)
 
         self.init_ui()
 
@@ -148,8 +174,10 @@ class DownloadWindow(QWidget):
 
         self.setLayout(self.main_layout)
 
-    def add_button_to_list(self, button_text):
+    def add_button_to_list(self, button_text, event_fun):
         button = QPushButton(button_text)
+        if event_fun != '':
+            button.clicked.connect(lambda: event_fun(button))
         button.setStyleSheet(
             "QPushButton {"
             "background-color: #b0d4ff;"
@@ -166,14 +194,39 @@ class DownloadWindow(QWidget):
         self.info_list.addItem(item)
         self.info_list.setItemWidget(item, button)
 
-    def add_official_to_list(self):
+    def add_official_to_list(self) -> None:
+        """官方server下载列表"""
         self.info_list.clear()
-        self.add_button_to_list("官方内核")
+        self.add_button_to_list("官方内核", '')
+        self.version_list = self.load_list_thread.return_list()[0]
+        for version in self.version_list:
+            self.add_button_to_list(f'{version}', event_fun=self.download_official)
 
-    def add_spigot_to_list(self):
+    def add_spigot_to_list(self) -> None:
         self.info_list.clear()
-        self.add_button_to_list("Sipgot")
+        self.add_button_to_list("Sipgot", '')
+        self.version_list = self.load_list_thread.return_list()[0]
+        for version in self.version_list:
+            self.add_button_to_list(f'{version}', event_fun=self.download_spigot)
 
-    def add_forge_to_list(self):
+    def add_forge_to_list(self) -> None:
         self.info_list.clear()
-        self.add_button_to_list("Forge")
+        self.add_button_to_list("Forge", '')
+        self.version_list = self.load_list_thread.return_list()[1]
+        for version in self.version_list:
+            self.add_button_to_list(f'{version}', event_fun=self.download_forge)
+
+    def download_official(self, download_btn: QPushButton):
+        """DownloadOfficial线程调用"""
+        self.download_official_thread = DownloadOfficial(download_btn=download_btn)
+        self.download_official_thread.start()
+
+    def download_spigot(self, download_btn: QPushButton):
+        """DownloadSpigot线程调用"""
+        self.download_spigot_thread = DownloadSpigot(download_btn=download_btn)
+        self.download_spigot_thread.start()
+
+    def download_forge(self, download_btn: QPushButton):
+        """DownLoadForge线程调用"""
+        self.download_forge_thread = DownloadForge(download_btn=download_btn)
+        self.download_forge_thread.start()
