@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import (
 from loguru import logger
 
 from .CreateWindow import CreateWindow
-from .Jar_DownLoad import JarDownLoad
+from .DownloadWindow import DownloadWindow
 from .TerminalWindow import TerminalWindow
 
 
@@ -47,8 +47,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("Minecraft 服务器启动器")
-        self.resize(1200, 800)
-        self.setMinimumSize(900, 600)
+        self.resize(960, 540)
 
         # 居中窗口
         self.center_window()
@@ -67,11 +66,11 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.Create = CreateWindow()
         self.Terminal = TerminalWindow()
-        self.Jar_ = JarDownLoad()
+        self.Download = DownloadWindow()
 
         self.stacked_widget.addWidget(self.Create)
         self.stacked_widget.addWidget(self.Terminal)
-        self.stacked_widget.addWidget(self.Jar_)
+        self.stacked_widget.addWidget(self.Download)
         self.stacked_widget.addWidget(SubWindow("管理Mods"))
 
         self.current_sub_window_index = 0  # 记录当前界面是哪一个
