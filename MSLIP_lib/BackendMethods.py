@@ -1,11 +1,8 @@
 import os
-import subprocess
 
 import requests
 from fake_user_agent import user_agent
 from lxml import etree
-
-from PyQt5.QtCore import QProcess
 
 from .Action import ServerAction
 
@@ -32,17 +29,6 @@ class BackendMethod(ServerAction):
         self.xmx = xmx
         self.xms = xms
 
-    def startServer(self) -> subprocess.Popen:
-        """此函数由启动服务器事件调用"""
-        path = os.path.dirname(os.path.realpath(__file__))[:-10] + f'/Servers/{self.ser_name}/server.jar'
-        print(f'cd ./Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}')
-        server_process = subprocess.Popen(
-            fr'cd ./Servers/{self.ser_name} && java -Xmx{self.xmx}g -Xms{self.xms}g -jar {path}',
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-        return server_process
-
     def auto_change(self):
         with open(fr'./Servers/{self.ser_name}/eula.txt', 'w', encoding='utf-8') as f:
             f.write("""#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA).
@@ -62,10 +48,11 @@ eula=true""")
     def GetJarList(self) -> list:
         """返回可用版本列表"""
         result = []
-        for paths, dirs, files in os.walk('.\\Servers'):
+        for paths, dirs, files in os.walk(r'.\DownLoads\Jar'):
             for file in files:
                 if os.path.splitext(file)[-1] == ".jar":
                     result.append(os.path.join(paths, file))
+                print(result)
 
         return result
 
