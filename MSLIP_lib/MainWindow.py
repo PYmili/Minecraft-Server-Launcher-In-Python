@@ -22,22 +22,7 @@ from loguru import logger
 from .CreateWindow import CreateWindow
 from .DownloadWindow import DownloadWindow
 from .TerminalWindow import TerminalWindow
-
-
-class SubWindow(QWidget):
-    """切换界面测试"""
-
-    def __init__(self, content):
-        super().__init__()
-        self.content = content
-        self.initUI()
-        logger.info("切换界面测试")
-
-    def initUI(self):
-        layout = QVBoxLayout()
-        label = QLabel(self.content)
-        layout.addWidget(label)
-        self.setLayout(layout)
+from .ModsWindow import ModsWindow
 
 
 class MainWindow(QMainWindow):
@@ -67,11 +52,12 @@ class MainWindow(QMainWindow):
         self.Create = CreateWindow()
         self.Terminal = TerminalWindow()
         self.Download = DownloadWindow()
+        self.Mods = ModsWindow()
 
         self.stacked_widget.addWidget(self.Create)
         self.stacked_widget.addWidget(self.Terminal)
         self.stacked_widget.addWidget(self.Download)
-        self.stacked_widget.addWidget(SubWindow("管理Mods"))
+        self.stacked_widget.addWidget(self.Mods)
 
         self.current_sub_window_index = 0  # 记录当前界面是哪一个
         self.menu_list.itemClicked.connect(self.change_sub_window)
