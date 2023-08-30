@@ -3,20 +3,20 @@ from PyQt5.QtGui import (
     QFont,
     QPalette,
     QBrush,
-    QPixmap
+    QPixmap,
+    QIcon
 )
 from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
-    QVBoxLayout,
     QHBoxLayout,
     QListWidget,
     QListWidgetItem,
     QPushButton,
-    QLabel,
     QDesktopWidget,
     QStackedWidget,
 )
+
 from loguru import logger
 
 from .CreateWindow import CreateWindow
@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("MSLIP")
+        self.setWindowIcon(QIcon("resources/images/icon.ico"))
         self.resize(960, 540)
 
         # 居中窗口
