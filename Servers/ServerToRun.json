@@ -1,8 +1,8 @@
 {
     "ServerName": "test",
     "java": "C:\\Program Files\\Common Files\\Oracle\\Java\\javapath\\java.exe",
-    "framework": ".\\Servers\\test\\server.jar",
+    "framework": "D:\\Python_MX\\Minecraft_Server_Launcher_In_Python\\Minecraft-Server-Launcher-In-Python\\Servers\\test\\forge-1.19.2-43.2.21-installer.jar",
     "xmx": "1024M",
     "xms": "1024M",
-    "CreationTime": "2023-08-23 18:50:31.075471"
+    "CreationTime": "2023-08-30 17:23:35.591837"
 }

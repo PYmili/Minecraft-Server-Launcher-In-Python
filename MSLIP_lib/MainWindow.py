@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Minecraft 服务器启动器")
+        self.setWindowTitle("MSLIP")
         self.resize(960, 540)
 
         # 居中窗口
@@ -131,7 +131,7 @@ class MainWindow(QMainWindow):
         super().resizeEvent(event)
 
         # 在窗口大小变化时更新背景图片
-        self.updateBackgroundImage("./resources/images/bg_0.png")
+        self.updateBackgroundImage("./resources/images/bg.png")
 
     def closeEvent(self, event):
         logger.info("程序结束")

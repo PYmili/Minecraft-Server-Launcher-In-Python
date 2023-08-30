@@ -9,7 +9,8 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QDialog,
     QLabel,
-    QDesktopWidget
+    QDesktopWidget,
+    QProgressBar
 )
 from fake_user_agent import user_agent
 from lxml import etree
@@ -140,29 +141,34 @@ class IfDownLoadWindow(QDialog):
         frame_geometry.moveCenter(screen_center)
         self.move(frame_geometry.topLeft())
         self.version = version
-        self.initUI()
 
-    def initUI(self):
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
 
         message_label = QLabel(f"确定要下载版本 {self.version} 吗？", self)
-        layout.addWidget(message_label)
+        self.layout.addWidget(message_label)
 
-        confirm_button = QPushButton("确认", self)
-        confirm_button.clicked.connect(self.confirmDownload)
-        layout.addWidget(confirm_button)
+        self.confirm_button = QPushButton("确认", self)
+        self.confirm_button.clicked.connect(self.confirmDownload)
+        self.layout.addWidget(self.confirm_button)
 
-        cancel_button = QPushButton("取消", self)
-        cancel_button.clicked.connect(self.close)
-        layout.addWidget(cancel_button)
+        self.cancel_button = QPushButton("取消", self)
+        self.cancel_button.clicked.connect(self.close)
+        self.layout.addWidget(self.cancel_button)
 
-        self.setLayout(layout)
+        self.setLayout(self.layout)
 
     def confirmDownload(self):
         source, version = self.version.split("-")
+        self.confirm_button.close()
+        self.progress_bar = QProgressBar(self)  # 创建进度条控件
+        self.layout.addWidget(self.progress_bar)  # 将进度条添加到布局
         self.th = DownLoadVersionThread(source, version)
         self.th.result_ready.connect(self.GetThreadResult)
+        self.th.progress_updated.connect(self.UpdateProgressBar)
         self.th.start()
+
+    def UpdateProgressBar(self, number: int):
+        self.progress_bar.setValue(number)
 
     def GetThreadResult(self, result: str):
         QMessageBox.information(
@@ -177,6 +183,7 @@ class IfDownLoadWindow(QDialog):
 class DownLoadVersionThread(QThread):
     """下载指定内核线程"""
     result_ready = pyqtSignal(str)
+    progress_updated = pyqtSignal(int)
 
     def __init__(self, source: str, version: str):
         super(DownLoadVersionThread, self).__init__()
@@ -188,15 +195,22 @@ class DownLoadVersionThread(QThread):
 
     def run(self):
         logger.info("启动内核下载线程")
+        result = False
         if self.source == "官方":
-            self.backend.Download_official()
+            result = self.backend.Download_official()
         elif self.source == "spigot":
-            self.backend.Download_spigot()
+            result = self.backend.Download_spigot()
         elif self.source == "forge":
-            self.backend.Download_forge()
+            result = self.backend.Download_forge()
 
-        logger.info("下载成功！")
-        self.result_ready.emit("下载成功！")
+        if result is True:
+            logger.info("下载成功！")
+            self.result_ready.emit("下载成功！")
+            self.progress_updated.emit(100)
+        else:
+            logger.info("下载失败！")
+            self.result_ready.emit("下载失败！")
+            self.progress_updated.emit(50)
 
 
 class GetOfficialVersionThread(QThread):
