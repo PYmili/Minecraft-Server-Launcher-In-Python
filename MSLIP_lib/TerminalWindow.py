@@ -20,6 +20,7 @@ from PyQt5.QtCore import (
     pyqtSignal
 )
 
+from .BackendMethods import BackendMethod
 from loguru import logger
 
 
@@ -37,8 +38,17 @@ class StartJavaServerProcess(QProcess):
         logger.info("启动StartJavaServerProcess")
         self.setProcessChannelMode(QProcess.MergedChannels)
         self.readyReadStandardOutput.connect(self.readOutput)
+
+        # 提前加载eula协议
+        self.eulaTxt = os.path.join(os.path.split(server_path)[0], "eula.txt")
+        with open(self.eulaTxt, "w+", encoding="utf-8") as wfp:
+            wfp.write("eula=true\n")
+
+        logger.info(f"cd {os.path.dirname(server_path)}")
         self.setWorkingDirectory(os.path.dirname(server_path))  # 设置工作目录为服务器文件所在目录
+
         self.start(java_path, server_args + ["-jar", os.path.basename(server_path), "nogui"])
+        logger.info(f"{java_path} {' '.join(server_args)} -jar {os.path.basename(server_path)} nogui")
 
     # 读取游戏log输出
     def readOutput(self):
@@ -243,8 +253,13 @@ class ServerSelectionWindow(QDialog):
     def confirmSelection(self):
         logger.info("确认要启动服务器")
         selected_server = self.server_combo_box.currentText()
+        writeData = self.getServerList()[selected_server]
+        writeData['framework'] = os.path.join(
+            os.getcwd(),
+            writeData['framework'].strip(".\\")
+        )
         with open("./Servers/ServerToRun.json", "w+", encoding="utf-8") as wfp:
-            wfp.write(json.dumps(self.getServerList()[selected_server], indent=4))
+            wfp.write(json.dumps(writeData, indent=4))
 
         self.accept()
         self.close()
